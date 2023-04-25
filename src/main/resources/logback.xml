@@ -1,0 +1,67 @@
+<configuration scan="true" scanPeriod="300 seconds" >
+    <property resource="application.properties" />
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>../logs/data-processor.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>../logs/data-processor.log.%d{yyyy-MM-dd}</fileNamePattern>
+            <maxHistory>8</maxHistory>
+            <totalSizeCap>3GB</totalSizeCap>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n</pattern>
+        </encoder>
+    </appender>
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n</pattern>
+        </encoder>
+    </appender>
+    <appender name="INBOUND_JOURNAL_FILE" class="ch.qos.logback.core.FileAppender">
+        <file>../logs/${inbound.journal.path}</file>
+        <append>false</append>
+        <encoder>
+            <pattern>%msg%n</pattern>
+        </encoder>
+    </appender>
+    <appender name="OUTBOUND_JOURNAL_FILE" class="ch.qos.logback.core.FileAppender">
+        <file>../logs/${outbound.journal.path}</file>
+        <append>false</append>
+        <encoder>
+            <pattern>%msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="ASYNC_STDOUT" class="ch.qos.logback.classic.AsyncAppender">
+        <discardingThreshold>0</discardingThreshold>
+        <appender-ref ref="STDOUT" />
+    </appender>
+
+    <appender name="ASYNC_FILE" class="ch.qos.logback.classic.AsyncAppender">
+        <discardingThreshold>0</discardingThreshold>
+        <appender-ref ref="FILE" />
+    </appender>
+
+    <appender name="ASYNC_INBOUND_JOURNAL_FILE" class="ch.qos.logback.classic.AsyncAppender">
+        <discardingThreshold>0</discardingThreshold>
+        <appender-ref ref="INBOUND_JOURNAL_FILE" />
+    </appender>
+
+    <appender name="ASYNC_OUTBOUND_JOURNAL_FILE" class="ch.qos.logback.classic.AsyncAppender">
+        <discardingThreshold>0</discardingThreshold>
+        <appender-ref ref="OUTBOUND_JOURNAL_FILE" />
+    </appender>
+
+    <logger name="com.leon.services" level="INFO" />
+    <logger name="com.leon.controllers" level="INFO" />
+    <logger name="com.leon.disruptors" level="INFO" />
+    <logger name="com.leon.handler.OutboundJournalEventHandler" level="INFO">
+        <appender-ref ref="ASYNC_OUTBOUND_JOURNAL_FILE"/>
+    </logger>
+    <logger name="com.leon.handler.InboundJournalEventHandler" level="INFO">
+        <appender-ref ref="ASYNC_INBOUND_JOURNAL_FILE"/>
+    </logger>
+    <root level="ERROR">
+        <appender-ref ref="ASYNC_STDOUT" />
+        <appender-ref ref="ASYNC_FILE" />
+    </root>
+</configuration>
