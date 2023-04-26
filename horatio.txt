@@ -1,0 +1,8 @@
+CASH_CHECK_REQUEST={"clientId": 1, "instrumentId":  1, "requestType":  "CASH_CHECK_REQUEST", "lockCash": 1, "unlockCash": 0}
+CASH_CHECK_REQUEST={"clientId": 1, "instrumentId":  1, "requestType":  "CASH_CHECK_REQUEST", "lockCash": 1, "unlockCash": 0}
+CASH_CHECK_REQUEST={"clientId": 2, "instrumentId":  1, "requestType":  "CASH_CHECK_REQUEST", "lockCash": 1, "unlockCash": 0}
+CASH_CHECK_REQUEST={"clientId": 1, "instrumentId":  1, "requestType":  "CASH_CHECK_REQUEST", "lockCash": 1, "unlockCash": 0}
+POSITION_CHECK_REQUEST={"clientId": 1, "instrumentId":  1, "requestType":  "POSITION_CHECK_REQUEST", "lockQuantity": 1, "unlockQuantity": 0, "requestSubType":  "LONG_SELL_ONLY"}
+POSITION_CHECK_REQUEST={"clientId": 1, "instrumentId":  2, "requestType":  "POSITION_CHECK_REQUEST", "lockQuantity": 1, "unlockQuantity": 0, "requestSubType":  "LONG_AND_COVERED_SHORT_SELL"}
+POSITION_CHECK_REQUEST={"clientId": 1, "instrumentId":  2, "requestType":  "POSITION_CHECK_REQUEST", "lockQuantity": 0, "unlockQuantity": 1, "requestSubType":  "LONG_SELL_ONLY"}
+POSITION_CHECK_REQUEST={"clientId": 1, "instrumentId":  1, "requestType":  "POSITION_CHECK_REQUEST", "lockQuantity": 1, "unlockQuantity": 0, "requestSubType":  "LONG_SELL_ONLY"}

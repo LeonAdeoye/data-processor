@@ -5,19 +5,22 @@ import com.lmax.disruptor.EventHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
 import javax.annotation.PostConstruct;
 
-public class FileLineWriterImpl implements FileWriter, EventHandler<DisruptorEvent>
+@Service
+public class FileLineWriterImpl implements OutputWriter, EventHandler<DisruptorEvent>
 {
 	private static final Logger logger = LoggerFactory.getLogger(FileLineWriterImpl.class);
-	@Value("${file.line.writer.filepath}")
-	private String filepath;
+	@Value("${output.writer.file.path}")
+	private String filePath;
 
 	@PostConstruct
 	@Override
 	public void initialize()
 	{
-		// Open output file
+		logger.info("Opening file: " + filePath + " for writing.");
 	}
 
 	@Override

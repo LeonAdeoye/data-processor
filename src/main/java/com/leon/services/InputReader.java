@@ -1,8 +1,8 @@
 package com.leon.services;
 
-public interface FileReader
+public interface InputReader
 {
-	String read();
+	void read();
 	void shutdown();
 	void initialize();
 }

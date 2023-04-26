@@ -1,6 +1,6 @@
 package com.leon.services;
 
-public interface FileWriter
+public interface OutputWriter
 {
 	void write(String output);
 	void initialize();
