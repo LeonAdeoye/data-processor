@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.stereotype.Service;
-
 import javax.annotation.PostConstruct;
 
 @Service
@@ -42,6 +41,7 @@ public class BootstrapServiceImpl implements BootstrapService
 			ApplicationContext context = new ClassPathXmlApplicationContext(new String[]{"bean-factory.xml"});
 			BeanFactory factory = context;
 			InputReader inputReader = (InputReader) factory.getBean("inputReader");
+			inputReader.read().subscribe(payload -> inboundDisruptor.push(payload));
 			OutputWriter outputWriter = (OutputWriter) factory.getBean("outputWriter");
 
 			logger.info("Completed bootstrapping");
