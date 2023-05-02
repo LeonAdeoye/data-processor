@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.stereotype.Service;
@@ -30,6 +31,9 @@ public class BootstrapServiceImpl implements BootstrapService
 	private OutputWriter outputWriter;
 	private DataProcessingService dataProcessingService;
 
+	@Value("${input.reader.file.path}")
+	private String filePath;
+
 	@Override
 	public void start()
 	{
@@ -40,11 +44,20 @@ public class BootstrapServiceImpl implements BootstrapService
 
 			ApplicationContext context = new ClassPathXmlApplicationContext(new String[]{"bean-factory.xml"});
 			BeanFactory factory = context;
-			InputReader inputReader = (InputReader) factory.getBean("inputReader");
-			inputReader.read().subscribe(payload -> inboundDisruptor.push(payload));
 			OutputWriter outputWriter = (OutputWriter) factory.getBean("outputWriter");
+			InputReader inputReader = (InputReader) factory.getBean("inputReader");
 
-			logger.info("Completed bootstrapping");
+			inputReader.readLines(filePath).subscribe(
+					inboundDisruptor::push,
+					err ->
+					{
+						logger.error(err.getMessage());
+					},
+					() ->
+					{
+						logger.info("Completed processing of input.");
+					}
+			);
 		}
 		else
 			logger.error("Bootstrapper has already started.");
@@ -53,7 +66,6 @@ public class BootstrapServiceImpl implements BootstrapService
 	@Override
 	public void stop()
 	{
-		inputReader.shutdown();
 		inboundDisruptor.stop();
 		outboundDisruptor.stop();
 	}

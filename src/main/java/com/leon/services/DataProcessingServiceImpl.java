@@ -27,5 +27,6 @@ public class DataProcessingServiceImpl implements DataProcessingService, EventHa
 	public void onEvent(DisruptorEvent disruptorEvent, long sequence, boolean endOfBatch)
 	{
 		logger.info(disruptorEvent.getPayload().toString());
+		// OutputWriter
 	}
 }
