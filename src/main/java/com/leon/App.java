@@ -1,6 +1,6 @@
 package com.leon;
 
-import com.leon.services.BootstrapService;
+import com.leon.services.OrchestrationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -10,7 +10,7 @@ import javax.annotation.PostConstruct;
 public class App
 {
     @Autowired
-    BootstrapService bootstrapService;
+	OrchestrationService orchestrationService;
 
     public static void main(String[] args)
     {
@@ -20,6 +20,6 @@ public class App
     @PostConstruct
     public void start()
     {
-        bootstrapService.start();
+        orchestrationService.start();
     }
 }

@@ -1,6 +1,6 @@
 package com.leon.services;
 
-public interface BootstrapService
+public interface OrchestrationService
 {
 	void start();
 	void stop();

@@ -18,6 +18,8 @@ public class FileLineReaderImpl implements InputReader
 {
 	private static final Logger logger = LoggerFactory.getLogger(FileLineReaderImpl.class);
 
+	private long count;
+
 	@Value("${input.reader.file.path}")
 	private String filePath;
 
@@ -71,5 +73,11 @@ public class FileLineReaderImpl implements InputReader
 	public void shutdown()
 	{
 
+	}
+
+	@Override
+	public long getLinesRead()
+	{
+		return count;
 	}
 }

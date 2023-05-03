@@ -8,4 +8,5 @@ public interface InputReader
 	Flux<DisruptorPayload> readLines();
 	Flux<DisruptorPayload> readLines(String filePath);
 	void shutdown();
+	long getLinesRead();
 }

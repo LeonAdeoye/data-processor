@@ -3,7 +3,6 @@ package com.leon.services;
 import com.leon.disruptors.DisruptorService;
 import com.leon.disruptors.JournalEventHandler;
 import com.leon.disruptors.OutputEventHandler;
-import com.leon.factory.DataProcessingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.BeanFactory;
@@ -15,9 +14,9 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 
 @Service
-public class BootstrapServiceImpl implements BootstrapService
+public class OrchestrationServiceImpl implements OrchestrationService
 {
-	private static final Logger logger = LoggerFactory.getLogger(BootstrapServiceImpl.class);
+	private static final Logger logger = LoggerFactory.getLogger(OrchestrationServiceImpl.class);
 	private boolean hasStarted = false;
 
 	@Autowired
@@ -29,10 +28,15 @@ public class BootstrapServiceImpl implements BootstrapService
 
 	private InputReader inputReader;
 	private OutputWriter outputWriter;
-	private DataProcessingService dataProcessingService;
 
 	@Value("${input.reader.file.path}")
-	private String filePath;
+	private String readerFilePath;
+
+	@Value("${output.writer.file.path}")
+	private String writerFilePath;
+
+	@Autowired
+	private DataProcessingEventHandler dataProcessingEventHandler;
 
 	@Override
 	public void start()
@@ -44,10 +48,12 @@ public class BootstrapServiceImpl implements BootstrapService
 
 			ApplicationContext context = new ClassPathXmlApplicationContext(new String[]{"bean-factory.xml"});
 			BeanFactory factory = context;
+
 			OutputWriter outputWriter = (OutputWriter) factory.getBean("outputWriter");
+			outputWriter.initialize(writerFilePath);
 			InputReader inputReader = (InputReader) factory.getBean("inputReader");
 
-			inputReader.readLines(filePath).subscribe(
+			inputReader.readLines(readerFilePath).subscribe(
 					inboundDisruptor::push,
 					err ->
 					{
@@ -56,8 +62,7 @@ public class BootstrapServiceImpl implements BootstrapService
 					() ->
 					{
 						logger.info("Completed processing of input.");
-					}
-			);
+					});
 		}
 		else
 			logger.error("Bootstrapper has already started.");
@@ -75,7 +80,8 @@ public class BootstrapServiceImpl implements BootstrapService
 	public void initialize()
 	{
 		logger.info("Initializing bootstrapping process...");
-		inboundDisruptor.start("INBOUND", new JournalEventHandler(), new DataProcessingServiceImpl());
+		dataProcessingEventHandler.setOutboundDisruptor(outboundDisruptor);
+		inboundDisruptor.start("INBOUND", new JournalEventHandler(), dataProcessingEventHandler);
 		outboundDisruptor.start("OUTBOUND", new JournalEventHandler(), new OutputEventHandler());
 		logger.info("Initialization of bootstrapping process completed.");
 	}

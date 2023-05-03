@@ -1,43 +1,65 @@
 package com.leon.services;
 
-import com.leon.disruptors.DisruptorEvent;
-import com.lmax.disruptor.EventHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
-import javax.annotation.PostConstruct;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 @Service
-public class FileLineWriterImpl implements OutputWriter, EventHandler<DisruptorEvent>
+public class FileLineWriterImpl implements OutputWriter
 {
 	private static final Logger logger = LoggerFactory.getLogger(FileLineWriterImpl.class);
-	@Value("${output.writer.file.path}")
-	private String filePath;
 
-	@PostConstruct
+	private Path path;
+	private BufferedWriter writer;
+
 	@Override
-	public void initialize()
+	public void initialize(String filePath)
 	{
-		logger.info("Opening file: " + filePath + " for writing.");
+		try
+		{
+			logger.info("Opening file: " + filePath + " for writing.");
+			path = Paths.get(filePath);
+			writer = Files.newBufferedWriter(path);
+		}
+		catch(IOException ioe)
+		{
+			logger.error(ioe.getMessage());
+			shutdown();
+		}
 	}
 
 	@Override
 	public void write(String output)
 	{
-
+		try
+		{
+			logger.info("Writing output: " + output);
+			writer.write(output);
+		}
+		catch(IOException io)
+		{
+			logger.error(io.getMessage());
+		}
 	}
 
-	@Override
-	public void onEvent(DisruptorEvent event, long sequence, boolean enfOfBatch)
-	{
-		logger.info(event.getPayload().toString());
-		write(event.getPayload().toString());
-	}
 	@Override
 	public void shutdown()
 	{
-
+		if(writer != null)
+		{
+			try
+			{
+				writer.close();
+			}
+			catch(IOException io)
+			{
+				logger.error(io.getMessage());
+			}
+		}
 	}
 }
