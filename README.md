@@ -2,9 +2,11 @@ Garbage collection telemetry
 
 factory method
 
-MongoDB write/read
+Mongo DB write/read
 
 AMPS read/write
+
+Chronicle Queue
 
 WebSocket read/write
 

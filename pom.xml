@@ -101,6 +101,11 @@
     </dependency>
     <dependency>
       <groupId>net.openhft</groupId>
+      <artifactId>chronicle</artifactId>
+      <version>3.6.4</version>
+    </dependency>
+    <dependency>
+      <groupId>net.openhft</groupId>
       <artifactId>chronicle-map</artifactId>
       <version>${chronicle.version}</version>
       <exclusions>
