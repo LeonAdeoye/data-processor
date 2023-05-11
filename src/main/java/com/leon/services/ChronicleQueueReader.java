@@ -1,19 +1,22 @@
 package com.leon.services;
 
+import com.leon.disruptors.DisruptorPayload;
 import net.openhft.chronicle.Chronicle;
 import net.openhft.chronicle.ChronicleQueueBuilder;
 import net.openhft.chronicle.ExcerptTailer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import reactor.core.publisher.Flux;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 
-public class ChronicleQueueReader
+public class ChronicleQueueReader implements InputReader
 {
 	private static final Logger logger = LoggerFactory.getLogger(ChronicleQueueReader.class);
 	private Chronicle chronicle;
 
+	@Override
 	public void initialize(String chronicleFile)
 	{
 		try
@@ -27,22 +30,41 @@ public class ChronicleQueueReader
 		}
 	}
 
-	public void read() throws IOException
+	@Override
+	public Flux<DisruptorPayload> read()
 	{
 		try
 		{
+			logger.info("Reading chronicle queue and creating a Flux...");
 			ExcerptTailer tailer = chronicle.createTailer();
-			while (tailer.nextIndex()) {
-				tailer.readUTF();
-			}
-
-			tailer.finish();
-			tailer.close();
-			chronicle.close();
+			return Flux.create(emitter ->
+			{
+				while (tailer.nextIndex())
+				{
+					emitter.next(new DisruptorPayload(tailer.readUTF()));
+				}
+				emitter.complete();
+				tailer.finish();
+				tailer.close();
+			});
 		}
 		catch(Exception e)
 		{
 			logger.error(e.getMessage());
+		}
+		return Flux.empty();
+	}
+
+	@Override
+	public void shutdown()
+	{
+		try
+		{
+			chronicle.close();
+		}
+		catch(IOException ioe)
+		{
+			logger.error(ioe.getMessage());
 		}
 	}
 }

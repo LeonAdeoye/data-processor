@@ -17,8 +17,6 @@ import java.util.stream.Stream;
 public class FileLineReaderImpl implements InputReader
 {
 	private static final Logger logger = LoggerFactory.getLogger(FileLineReaderImpl.class);
-
-	@Value("${input.reader.file.path}")
 	private String filePath;
 
 	@Value("${input.reader.payload.type:#{null}}")
@@ -44,27 +42,9 @@ public class FileLineReaderImpl implements InputReader
 	}
 
 	@Override
-	public Flux<DisruptorPayload> read(String filePath)
+	public void initialize(String filePath)
 	{
-		logger.info("Reading file: " + filePath + " and creating a Flux...");
-		return Flux.create(emitter ->
-		{
-			try (Stream<String> linesStream = Files.lines(Paths.get(filePath)))
-			{
-				linesStream.map(DisruptorPayload::new).forEach(emitter::next);
-				emitter.complete();
-			}
-			catch(IOException ioe)
-			{
-				emitter.error(ioe);
-				logger.error(ioe.getMessage());
-			}
-		});
-	}
-
-	@PostConstruct
-	public void initialize()
-	{
+		this.filePath = filePath;
 	}
 
 	@Override

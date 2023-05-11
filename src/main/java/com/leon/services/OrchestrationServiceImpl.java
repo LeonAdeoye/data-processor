@@ -52,8 +52,9 @@ public class OrchestrationServiceImpl implements OrchestrationService
 			OutputWriter outputWriter = (OutputWriter) factory.getBean("outputWriter");
 			outputWriter.initialize(writerFilePath);
 			InputReader inputReader = (InputReader) factory.getBean("inputReader");
+			inputReader.initialize(readerFilePath);
 
-			inputReader.read(readerFilePath).subscribe(
+			inputReader.read().subscribe(
 					inboundDisruptor::push,
 					err ->
 					{
