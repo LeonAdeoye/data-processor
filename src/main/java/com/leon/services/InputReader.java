@@ -5,8 +5,8 @@ import reactor.core.publisher.Flux;
 
 public interface InputReader
 {
-	Flux<DisruptorPayload> readLines();
-	Flux<DisruptorPayload> readLines(String filePath);
+	void initialize();
+	Flux<DisruptorPayload> read();
+	Flux<DisruptorPayload> read(String filePath);
 	void shutdown();
-	long getLinesRead();
 }

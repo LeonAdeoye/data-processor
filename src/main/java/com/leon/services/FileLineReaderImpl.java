@@ -18,8 +18,6 @@ public class FileLineReaderImpl implements InputReader
 {
 	private static final Logger logger = LoggerFactory.getLogger(FileLineReaderImpl.class);
 
-	private long count;
-
 	@Value("${input.reader.file.path}")
 	private String filePath;
 
@@ -27,7 +25,7 @@ public class FileLineReaderImpl implements InputReader
 	private Optional<String> payloadType;
 
 	@Override
-	public Flux<DisruptorPayload> readLines()
+	public Flux<DisruptorPayload> read()
 	{
 		logger.info("Reading file: " + filePath + " and creating a Flux...");
 		return Flux.create(emitter ->
@@ -46,7 +44,7 @@ public class FileLineReaderImpl implements InputReader
 	}
 
 	@Override
-	public Flux<DisruptorPayload> readLines(String filePath)
+	public Flux<DisruptorPayload> read(String filePath)
 	{
 		logger.info("Reading file: " + filePath + " and creating a Flux...");
 		return Flux.create(emitter ->
@@ -73,11 +71,5 @@ public class FileLineReaderImpl implements InputReader
 	public void shutdown()
 	{
 
-	}
-
-	@Override
-	public long getLinesRead()
-	{
-		return count;
 	}
 }

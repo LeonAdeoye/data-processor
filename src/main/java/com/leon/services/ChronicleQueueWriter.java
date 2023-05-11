@@ -9,11 +9,12 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 
-public class ChronicleQueueWriter
+public class ChronicleQueueWriter implements OutputWriter
 {
 	private static final Logger logger = LoggerFactory.getLogger(ChronicleQueueWriter.class);
 	private Chronicle chronicle;
 
+	@Override
 	public void initialize(String chronicleFile)
 	{
 		try
@@ -27,7 +28,21 @@ public class ChronicleQueueWriter
 		}
 	}
 
-	public void write(String textToWrite) throws IOException
+	@Override
+	public void shutdown()
+	{
+		try
+		{
+			chronicle.close();
+		}
+		catch (IOException ioe)
+		{
+			logger.error("Failed to close chronicle queue because of exception: " + ioe.getMessage());
+		}
+	}
+
+	@Override
+	public void write(String textToWrite)
 	{
 		try
 		{
