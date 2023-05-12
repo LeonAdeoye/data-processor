@@ -35,12 +35,6 @@ public class OrchestrationServiceImpl implements OrchestrationService
 	@Value("${output.writer.file.path}")
 	private String writerFilePath;
 
-	@Value("${input.reader.type}")
-	private String inputReaderType;
-
-	@Value("${output.writer.type}")
-	private String outputWriterType;
-
 	@Autowired
 	private DataProcessingEventHandler dataProcessingEventHandler;
 
@@ -55,9 +49,9 @@ public class OrchestrationServiceImpl implements OrchestrationService
 			ApplicationContext context = new ClassPathXmlApplicationContext(new String[]{"bean-factory.xml"});
 			BeanFactory factory = context;
 
-			OutputWriter outputWriter = (OutputWriter) factory.getBean(outputWriterType);
+			OutputWriter outputWriter = (OutputWriter) factory.getBean("outputWriter");
 			outputWriter.initialize(writerFilePath);
-			InputReader inputReader = (InputReader) factory.getBean(inputReaderType);
+			InputReader inputReader = (InputReader) factory.getBean("inputReader");
 			inputReader.initialize(readerFilePath);
 
 			inputReader.read().subscribe(
@@ -78,8 +72,8 @@ public class OrchestrationServiceImpl implements OrchestrationService
 	@Override
 	public void stop()
 	{
-		inputReader.shutdown();
-		outputWriter.shutdown();
+		inputReader.stop();
+		outputWriter.stop();
 		inboundDisruptor.stop();
 		outboundDisruptor.stop();
 	}

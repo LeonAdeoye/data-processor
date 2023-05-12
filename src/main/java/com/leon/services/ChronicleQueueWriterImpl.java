@@ -5,12 +5,12 @@ import net.openhft.chronicle.ChronicleQueueBuilder;
 import net.openhft.chronicle.ExcerptAppender;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 
-@Service
+@Component
 public class ChronicleQueueWriterImpl implements OutputWriter
 {
 	private static final Logger logger = LoggerFactory.getLogger(ChronicleQueueWriterImpl.class);
@@ -31,7 +31,7 @@ public class ChronicleQueueWriterImpl implements OutputWriter
 	}
 
 	@Override
-	public void shutdown()
+	public void stop()
 	{
 		try
 		{

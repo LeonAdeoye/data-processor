@@ -6,13 +6,13 @@ import net.openhft.chronicle.ChronicleQueueBuilder;
 import net.openhft.chronicle.ExcerptTailer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 
-@Service
+@Component
 public class ChronicleQueueReaderImpl implements InputReader
 {
 	private static final Logger logger = LoggerFactory.getLogger(ChronicleQueueReaderImpl.class);
@@ -60,7 +60,7 @@ public class ChronicleQueueReaderImpl implements InputReader
 	}
 
 	@Override
-	public void shutdown()
+	public void stop()
 	{
 		try
 		{

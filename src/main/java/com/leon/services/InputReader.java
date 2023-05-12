@@ -7,5 +7,5 @@ public interface InputReader
 {
 	void initialize(String filePath);
 	Flux<DisruptorPayload> read();
-	void shutdown();
+	void stop();
 }

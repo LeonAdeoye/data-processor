@@ -3,7 +3,7 @@ package com.leon.services;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
+
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -27,7 +27,7 @@ public class FileLineWriterImpl implements OutputWriter
 		catch(IOException ioe)
 		{
 			logger.error(ioe.getMessage());
-			shutdown();
+			stop();
 		}
 	}
 
@@ -46,7 +46,7 @@ public class FileLineWriterImpl implements OutputWriter
 	}
 
 	@Override
-	public void shutdown()
+	public void stop()
 	{
 		if(writer != null)
 		{
