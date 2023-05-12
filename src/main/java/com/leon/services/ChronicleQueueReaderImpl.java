@@ -6,14 +6,16 @@ import net.openhft.chronicle.ChronicleQueueBuilder;
 import net.openhft.chronicle.ExcerptTailer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 
-public class ChronicleQueueReader implements InputReader
+@Service
+public class ChronicleQueueReaderImpl implements InputReader
 {
-	private static final Logger logger = LoggerFactory.getLogger(ChronicleQueueReader.class);
+	private static final Logger logger = LoggerFactory.getLogger(ChronicleQueueReaderImpl.class);
 	private Chronicle chronicle;
 
 	@Override
@@ -42,6 +44,8 @@ public class ChronicleQueueReader implements InputReader
 				while (tailer.nextIndex())
 				{
 					emitter.next(new DisruptorPayload(tailer.readUTF()));
+					// TODO
+					logger.info("chronicle queue data: " + tailer.readUTF());
 				}
 				emitter.complete();
 				tailer.finish();

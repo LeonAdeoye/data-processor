@@ -2,19 +2,18 @@ package com.leon.services;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 
-@Service
+
+@Component
 public class FileLineWriterImpl implements OutputWriter
 {
 	private static final Logger logger = LoggerFactory.getLogger(FileLineWriterImpl.class);
-
-	private Path path;
 	private BufferedWriter writer;
 
 	@Override
@@ -23,8 +22,7 @@ public class FileLineWriterImpl implements OutputWriter
 		try
 		{
 			logger.info("Opening file: " + filePath + " for writing.");
-			path = Paths.get(filePath);
-			writer = Files.newBufferedWriter(path);
+			writer = Files.newBufferedWriter(Paths.get(filePath));
 		}
 		catch(IOException ioe)
 		{

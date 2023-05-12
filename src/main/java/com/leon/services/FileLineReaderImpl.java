@@ -3,24 +3,20 @@ package com.leon.services;
 import com.leon.disruptors.DisruptorPayload;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
-import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Optional;
 import java.util.stream.Stream;
 
-@Service
+@Component
 public class FileLineReaderImpl implements InputReader
 {
 	private static final Logger logger = LoggerFactory.getLogger(FileLineReaderImpl.class);
 	private String filePath;
-
-	@Value("${input.reader.payload.type:#{null}}")
-	private Optional<String> payloadType;
 
 	@Override
 	public Flux<DisruptorPayload> read()
