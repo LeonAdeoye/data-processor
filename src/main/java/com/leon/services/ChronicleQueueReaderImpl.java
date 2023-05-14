@@ -41,13 +41,7 @@ public class ChronicleQueueReaderImpl implements InputReader
 		{
 			return Flux.create(emitter ->
 			{
-				ReadMarshallable marshallable = new ReadMarshallable() {
-					@Override
-					public void readMarshallable(WireIn wire) throws IORuntimeException
-					{
-						emitter.next(new DisruptorPayload(wire.read().text()));
-					}
-				};
+				ReadMarshallable marshallable = wire -> emitter.next(new DisruptorPayload(wire.read().text()));
 
 				while (!completed)
 				{
