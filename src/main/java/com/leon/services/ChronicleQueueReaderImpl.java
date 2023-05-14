@@ -18,14 +18,16 @@ public class ChronicleQueueReaderImpl implements InputReader
 	private ChronicleQueue queue;
 	private ExcerptTailer tailer;
 	private boolean completed = false;
+	private String endOfStream;
 
 	@Override
-	public void initialize(String chronicleFile)
+	public void initialize(String chronicleFile, String endOfStream)
 	{
 		try
 		{
-			queue = ChronicleQueue.singleBuilder(chronicleFile).build();
-			tailer = queue.createTailer();
+			this.endOfStream = endOfStream;
+			this.queue = ChronicleQueue.singleBuilder(chronicleFile).build();
+			this.tailer = queue.createTailer();
 		}
 		catch(Exception e)
 		{
@@ -41,14 +43,25 @@ public class ChronicleQueueReaderImpl implements InputReader
 		{
 			return Flux.create(emitter ->
 			{
-				ReadMarshallable marshallable = wire -> emitter.next(new DisruptorPayload(wire.read().text()));
+
+				ReadMarshallable marshallable = wire ->
+				{
+					String message = wire.read().text();
+
+					if(endOfStream.equals(message))
+					{
+						logger.info("Reading chronicle queue completed.");
+						this.completed = true;
+						emitter.complete();
+					}
+
+					emitter.next(new DisruptorPayload(message));
+				};
 
 				while (!completed)
 				{
 					tailer.readDocument(marshallable);
 				}
-
-				emitter.complete();
 			});
 		}
 		catch(Exception e)

@@ -36,7 +36,7 @@ public class FileLineReaderImpl implements InputReader
 	}
 
 	@Override
-	public void initialize(String filePath)
+	public void initialize(String filePath, String endOfStream)
 	{
 		this.filePath = filePath;
 	}

@@ -35,6 +35,9 @@ public class OrchestrationServiceImpl implements OrchestrationService
 	@Value("${output.writer.file.path}")
 	private String writerFilePath;
 
+	@Value("${input.writer.end.of.stream}")
+	private String endOfStream;
+
 	@Autowired
 	private DataProcessingEventHandler dataProcessingEventHandler;
 
@@ -52,7 +55,7 @@ public class OrchestrationServiceImpl implements OrchestrationService
 			OutputWriter outputWriter = (OutputWriter) factory.getBean("outputWriter");
 			outputWriter.initialize(writerFilePath);
 			InputReader inputReader = (InputReader) factory.getBean("inputReader");
-			inputReader.initialize(readerFilePath);
+			inputReader.initialize(readerFilePath, endOfStream);
 
 			inputReader.read().subscribe(
 					inboundDisruptor::push,
