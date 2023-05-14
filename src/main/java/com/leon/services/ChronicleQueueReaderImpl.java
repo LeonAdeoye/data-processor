@@ -1,55 +1,60 @@
 package com.leon.services;
 
 import com.leon.disruptors.DisruptorPayload;
-import net.openhft.chronicle.Chronicle;
-import net.openhft.chronicle.ChronicleQueueBuilder;
-import net.openhft.chronicle.ExcerptTailer;
+import net.openhft.chronicle.core.io.IORuntimeException;
+import net.openhft.chronicle.queue.ChronicleQueue;
+import net.openhft.chronicle.queue.ExcerptTailer;
+import net.openhft.chronicle.wire.ReadMarshallable;
+import net.openhft.chronicle.wire.WireIn;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
 
 @Component
 public class ChronicleQueueReaderImpl implements InputReader
 {
 	private static final Logger logger = LoggerFactory.getLogger(ChronicleQueueReaderImpl.class);
-	private Chronicle chronicle;
+	private ChronicleQueue queue;
+	private ExcerptTailer tailer;
+	private boolean completed = false;
 
 	@Override
 	public void initialize(String chronicleFile)
 	{
 		try
 		{
-			File queueDir = Files.createTempDirectory(chronicleFile).toFile();
-			chronicle = ChronicleQueueBuilder.indexed(queueDir).build();
+			queue = ChronicleQueue.singleBuilder(chronicleFile).build();
+			tailer = queue.createTailer();
 		}
 		catch(Exception e)
 		{
-			logger.error("Failed to initialize chronicle queue reader because of exception: " + e.getMessage());
+			logger.error("Failed to initialize chronicle queue tailer because of exception: " + e.getMessage());
 		}
 	}
 
 	@Override
 	public Flux<DisruptorPayload> read()
 	{
+		logger.info("Reading chronicle queue and creating a Flux...");
 		try
 		{
-			logger.info("Reading chronicle queue and creating a Flux...");
-			ExcerptTailer tailer = chronicle.createTailer();
 			return Flux.create(emitter ->
 			{
-				while (tailer.nextIndex())
+				ReadMarshallable marshallable = new ReadMarshallable() {
+					@Override
+					public void readMarshallable(WireIn wire) throws IORuntimeException
+					{
+						emitter.next(new DisruptorPayload(wire.read().text()));
+					}
+				};
+
+				while (!completed)
 				{
-					emitter.next(new DisruptorPayload(tailer.readUTF()));
-					// TODO
-					logger.info("chronicle queue data: " + tailer.readUTF());
+					tailer.readDocument(marshallable);
 				}
+
 				emitter.complete();
-				tailer.finish();
-				tailer.close();
 			});
 		}
 		catch(Exception e)
@@ -64,11 +69,12 @@ public class ChronicleQueueReaderImpl implements InputReader
 	{
 		try
 		{
-			chronicle.close();
+			completed = true;
+			queue.close();
 		}
-		catch(IOException ioe)
+		catch(Exception e)
 		{
-			logger.error(ioe.getMessage());
+			logger.error(e.getMessage());
 		}
 	}
 }

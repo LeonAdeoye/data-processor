@@ -18,7 +18,7 @@
     <slf4j.version>1.7.31</slf4j.version>
     <jackson.version>2.13.1</jackson.version>
     <java.version>1.8</java.version>
-    <chronicle.version>3.21.86</chronicle.version>
+    <chronicle.queue.version>5.22.28</chronicle.queue.version>
     <reactor-core.version>3.3.9.RELEASE</reactor-core.version>
     <lmax-disruptor.version>3.4.4</lmax-disruptor.version>
     <lmax-disruptor.version>3.4.4</lmax-disruptor.version>
@@ -101,19 +101,8 @@
     </dependency>
     <dependency>
       <groupId>net.openhft</groupId>
-      <artifactId>chronicle</artifactId>
-      <version>3.6.4</version>
-    </dependency>
-    <dependency>
-      <groupId>net.openhft</groupId>
-      <artifactId>chronicle-map</artifactId>
-      <version>${chronicle.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>com.sun.java</groupId>
-          <artifactId>tools</artifactId>
-        </exclusion>
-      </exclusions>
+      <artifactId>chronicle-queue</artifactId>
+      <version>${chronicle.queue.version}</version>
     </dependency>
   </dependencies>
 

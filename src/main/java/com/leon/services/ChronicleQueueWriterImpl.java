@@ -1,28 +1,25 @@
 package com.leon.services;
 
-import net.openhft.chronicle.Chronicle;
-import net.openhft.chronicle.ChronicleQueueBuilder;
-import net.openhft.chronicle.ExcerptAppender;
+import net.openhft.chronicle.queue.ChronicleQueue;
+import net.openhft.chronicle.queue.ExcerptAppender;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
 
 @Component
 public class ChronicleQueueWriterImpl implements OutputWriter
 {
 	private static final Logger logger = LoggerFactory.getLogger(ChronicleQueueWriterImpl.class);
-	private Chronicle chronicle;
+	private ChronicleQueue queue;
+	private ExcerptAppender appender;
 
 	@Override
 	public void initialize(String chronicleFile)
 	{
 		try
 		{
-			File queueDir = Files.createTempDirectory(chronicleFile).toFile();
-			chronicle = ChronicleQueueBuilder.indexed(queueDir).build();
+			queue = ChronicleQueue.singleBuilder(chronicleFile).build();
+			appender = queue.acquireAppender();
 		}
 		catch(Exception e)
 		{
@@ -35,11 +32,11 @@ public class ChronicleQueueWriterImpl implements OutputWriter
 	{
 		try
 		{
-			chronicle.close();
+			queue.close();
 		}
-		catch (IOException ioe)
+		catch (Exception e)
 		{
-			logger.error("Failed to close chronicle queue because of exception: " + ioe.getMessage());
+			logger.error("Failed to close chronicle queue because of exception: " + e.getMessage());
 		}
 	}
 
@@ -48,11 +45,7 @@ public class ChronicleQueueWriterImpl implements OutputWriter
 	{
 		try
 		{
-			ExcerptAppender appender = chronicle.createAppender();
-			appender.startExcerpt();
-
-			appender.writeUTF(textToWrite);
-			appender.finish();
+			appender.wire().write().text(textToWrite);
 		}
 		catch(Exception e)
 		{
