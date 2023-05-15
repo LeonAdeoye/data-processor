@@ -1,5 +1,6 @@
 package com.leon.disruptors;
 
+import com.leon.services.OutputWriter;
 import com.lmax.disruptor.EventHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -7,10 +8,17 @@ import org.slf4j.LoggerFactory;
 public class OutputEventHandler implements EventHandler<DisruptorEvent>
 {
 	private static Logger logger = LoggerFactory.getLogger(OutputEventHandler.class);
+	private OutputWriter writer;
+
+	public OutputEventHandler(OutputWriter writer)
+	{
+		this.writer = writer;
+	}
 
 	@Override
 	public void onEvent(DisruptorEvent disruptorEvent, long sequence, boolean endOfBatch)
 	{
-		logger.info(disruptorEvent.getPayload().toString());
+		if(writer != null)
+			this.writer.write(disruptorEvent.getPayload().toString());
 	}
 }

@@ -4,5 +4,4 @@ public interface OrchestrationService
 {
 	void start();
 	void stop();
-	void initialize();
 }

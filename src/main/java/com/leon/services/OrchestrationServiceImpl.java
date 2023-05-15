@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.stereotype.Service;
-import javax.annotation.PostConstruct;
 
 @Service
 public class OrchestrationServiceImpl implements OrchestrationService
@@ -56,6 +55,9 @@ public class OrchestrationServiceImpl implements OrchestrationService
 			outputWriter.initialize(writerFilePath);
 			InputReader inputReader = (InputReader) factory.getBean("inputReader");
 			inputReader.initialize(readerFilePath, endOfStream);
+			dataProcessingEventHandler.setOutboundDisruptor(outboundDisruptor);
+			inboundDisruptor.start("INBOUND", new JournalEventHandler(), dataProcessingEventHandler);
+			outboundDisruptor.start("OUTBOUND", new JournalEventHandler(), new OutputEventHandler(outputWriter));
 
 			inputReader.read().subscribe(
 					inboundDisruptor::push,
@@ -79,16 +81,5 @@ public class OrchestrationServiceImpl implements OrchestrationService
 		outputWriter.stop();
 		inboundDisruptor.stop();
 		outboundDisruptor.stop();
-	}
-
-	@Override
-	@PostConstruct
-	public void initialize()
-	{
-		logger.info("Initializing bootstrapping process...");
-		dataProcessingEventHandler.setOutboundDisruptor(outboundDisruptor);
-		inboundDisruptor.start("INBOUND", new JournalEventHandler(), dataProcessingEventHandler);
-		outboundDisruptor.start("OUTBOUND", new JournalEventHandler(), new OutputEventHandler());
-		logger.info("Initialization of bootstrapping process completed.");
 	}
 }
