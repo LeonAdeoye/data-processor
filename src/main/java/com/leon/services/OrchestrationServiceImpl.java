@@ -56,8 +56,8 @@ public class OrchestrationServiceImpl implements OrchestrationService
 			InputReader inputReader = (InputReader) factory.getBean("inputReader");
 			inputReader.initialize(readerFilePath, endOfStream);
 			dataProcessingEventHandler.setOutboundDisruptor(outboundDisruptor);
-			inboundDisruptor.start("INBOUND", new JournalEventHandler(), dataProcessingEventHandler);
 			outboundDisruptor.start("OUTBOUND", new JournalEventHandler(), new OutputEventHandler(outputWriter));
+			inboundDisruptor.start("INBOUND", new JournalEventHandler(), dataProcessingEventHandler);
 
 			inputReader.read().subscribe(
 					inboundDisruptor::push,

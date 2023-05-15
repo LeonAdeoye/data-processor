@@ -3,6 +3,8 @@ package com.leon.services;
 import com.leon.disruptors.DisruptorPayload;
 import net.openhft.chronicle.queue.ChronicleQueue;
 import net.openhft.chronicle.queue.ExcerptTailer;
+import net.openhft.chronicle.queue.RollCycle;
+import net.openhft.chronicle.queue.RollCycles;
 import net.openhft.chronicle.wire.ReadMarshallable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,7 +26,7 @@ public class ChronicleQueueReaderImpl implements InputReader
 		try
 		{
 			this.endOfStream = endOfStream;
-			this.queue = ChronicleQueue.singleBuilder(chronicleFile).build();
+			this.queue = ChronicleQueue.singleBuilder(chronicleFile).rollCycle(RollCycles.DAILY).build();
 			this.tailer = queue.createTailer();
 		}
 		catch(Exception e)
