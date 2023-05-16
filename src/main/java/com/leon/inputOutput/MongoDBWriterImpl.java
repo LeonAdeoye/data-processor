@@ -1,6 +1,6 @@
-package com.leon.services;
+package com.leon.inputOutput;
 
-public class KdbWriterImpl implements OutputWriter
+public class MongoDBWriterImpl implements OutputWriter
 {
 	@Override
 	public void write(String output)

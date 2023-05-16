@@ -1,6 +1,6 @@
-package com.leon.services;
+package com.leon.inputOutput;
 
-public class AmpsWriterImpl implements OutputWriter
+public class KdbWriterImpl implements OutputWriter
 {
 	@Override
 	public void write(String output)

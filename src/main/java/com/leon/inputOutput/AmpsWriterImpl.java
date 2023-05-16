@@ -1,6 +1,6 @@
-package com.leon.services;
+package com.leon.inputOutput;
 
-public class MongoDBWriterImpl implements OutputWriter
+public class AmpsWriterImpl implements OutputWriter
 {
 	@Override
 	public void write(String output)

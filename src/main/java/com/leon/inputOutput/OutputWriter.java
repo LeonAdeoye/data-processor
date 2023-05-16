@@ -1,4 +1,4 @@
-package com.leon.services;
+package com.leon.inputOutput;
 
 public interface OutputWriter
 {
