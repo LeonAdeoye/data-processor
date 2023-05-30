@@ -8,8 +8,10 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 
 @Component
 @ConditionalOnProperty(value="file.output.writer", havingValue = "true")
@@ -21,13 +23,19 @@ public class FileLineWriterImpl implements OutputWriter
 	@Value("${output.writer.file.path}")
 	private String filePath;
 
+	@Value("${output.writer.delimiter}")
+	private String delimiter;
+
+	private int count = 0;
+
 	@PostConstruct
 	public void initialize()
 	{
 		try
 		{
 			logger.info("Opening file: " + filePath + " for writing.");
-			writer = Files.newBufferedWriter(Paths.get(filePath));
+			writer = Files.newBufferedWriter(Paths.get(filePath), StandardCharsets.UTF_8, StandardOpenOption.CREATE,
+					StandardOpenOption.WRITE, StandardOpenOption.APPEND);
 		}
 		catch(IOException ioe)
 		{
@@ -41,7 +49,9 @@ public class FileLineWriterImpl implements OutputWriter
 	{
 		try
 		{
-			logger.info("Writing output: " + output);
+			if(++count > 1 && !delimiter.isEmpty())
+				writer.write(delimiter);
+
 			writer.write(output);
 		}
 		catch(IOException io)
