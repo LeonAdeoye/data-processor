@@ -3,6 +3,7 @@ package com.leon.connectors;
 import com.leon.disruptors.DisruptorPayload;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
@@ -16,7 +17,12 @@ import java.util.stream.Stream;
 public class FileLineReaderImpl implements InputReader
 {
 	private static final Logger logger = LoggerFactory.getLogger(FileLineReaderImpl.class);
+
+	@Value("${input.reader.file.path}")
 	private String filePath;
+
+	@Value("${input.writer.end.of.stream}")
+	private String endOfStream;
 
 	@Override
 	public Flux<DisruptorPayload> read()
@@ -35,12 +41,6 @@ public class FileLineReaderImpl implements InputReader
 				logger.error(ioe.getMessage());
 			}
 		});
-	}
-
-	@Override
-	public void initialize(String filePath, String endOfStream)
-	{
-		this.filePath = filePath;
 	}
 
 	@Override

@@ -24,11 +24,6 @@ public class JmsReaderImpl implements InputReader, MessageListener
 	public JmsReaderImpl() {}
 
 	@Override
-	public void initialize(String filePath, String endOfStream)
-	{
-	}
-
-	@Override
 	public Flux<DisruptorPayload> read()
 	{
 		return processor;

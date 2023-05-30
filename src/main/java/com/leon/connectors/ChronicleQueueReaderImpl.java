@@ -7,9 +7,11 @@ import net.openhft.chronicle.queue.RollCycles;
 import net.openhft.chronicle.wire.ReadMarshallable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
+import javax.annotation.PostConstruct;
 
 @Component
 @ConditionalOnProperty(value="chronicle.queue.input.reader", havingValue = "true")
@@ -19,14 +21,18 @@ public class ChronicleQueueReaderImpl implements InputReader
 	private ChronicleQueue queue;
 	private ExcerptTailer tailer;
 	private boolean completed = false;
+
+	@Value("${input.reader.file.path}")
+	private String chronicleFile;
+
+	@Value("${input.writer.end.of.stream}")
 	private String endOfStream;
 
-	@Override
-	public void initialize(String chronicleFile, String endOfStream)
+	@PostConstruct
+	public void initialize()
 	{
 		try
 		{
-			this.endOfStream = endOfStream;
 			this.queue = ChronicleQueue.singleBuilder(chronicleFile).rollCycle(RollCycles.DAILY).build();
 			this.tailer = queue.createTailer();
 		}

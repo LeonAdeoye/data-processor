@@ -14,12 +14,6 @@ public class AmpsWriterImpl implements OutputWriter
 	}
 
 	@Override
-	public void initialize(String filePath)
-	{
-
-	}
-
-	@Override
 	public void stop()
 	{
 

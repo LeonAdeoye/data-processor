@@ -28,15 +28,6 @@ public class OrchestrationServiceImpl implements OrchestrationService
 	@Autowired
 	private OutputWriter outputWriter;
 
-	@Value("${input.reader.file.path}")
-	private String readerFilePath;
-
-	@Value("${output.writer.file.path}")
-	private String writerFilePath;
-
-	@Value("${input.writer.end.of.stream}")
-	private String endOfStream;
-
 	@Autowired
 	private DataProcessingEventHandler dataProcessingEventHandler;
 
@@ -47,8 +38,6 @@ public class OrchestrationServiceImpl implements OrchestrationService
 		{
 			logger.info("Starting bootstrapping process...");
 			hasStarted = true;
-			outputWriter.initialize(writerFilePath);
-			inputReader.initialize(readerFilePath, endOfStream);
 			dataProcessingEventHandler.setOutboundDisruptor(outboundDisruptor);
 			outboundDisruptor.start("OUTBOUND", new JournalEventHandler(), new OutputEventHandler(outputWriter));
 			inboundDisruptor.start("INBOUND", new JournalEventHandler(), dataProcessingEventHandler);

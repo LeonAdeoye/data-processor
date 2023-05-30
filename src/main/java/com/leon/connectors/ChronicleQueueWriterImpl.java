@@ -4,8 +4,10 @@ import net.openhft.chronicle.queue.ChronicleQueue;
 import net.openhft.chronicle.queue.ExcerptAppender;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
+import javax.annotation.PostConstruct;
 
 @Component
 @ConditionalOnProperty(value="chronicle.queue.output.writer", havingValue = "true")
@@ -15,7 +17,10 @@ public class ChronicleQueueWriterImpl implements OutputWriter
 	private ChronicleQueue queue;
 	private ExcerptAppender appender;
 
-	@Override
+	@Value("${output.writer.file.path}")
+	private String chronicleFile;
+
+	@PostConstruct
 	public void initialize(String chronicleFile)
 	{
 		try
