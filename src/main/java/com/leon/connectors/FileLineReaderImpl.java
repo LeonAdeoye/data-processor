@@ -21,9 +21,6 @@ public class FileLineReaderImpl implements InputReader
 	@Value("${input.reader.file.path}")
 	private String filePath;
 
-	@Value("${input.writer.end.of.stream}")
-	private String endOfStream;
-
 	@Override
 	public Flux<DisruptorPayload> read()
 	{

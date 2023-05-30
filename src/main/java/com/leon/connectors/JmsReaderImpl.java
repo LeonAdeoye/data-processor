@@ -3,6 +3,7 @@ package com.leon.connectors;
 import com.leon.disruptors.DisruptorPayload;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
@@ -19,7 +20,9 @@ public class JmsReaderImpl implements InputReader, MessageListener
 	private static final Logger logger = LoggerFactory.getLogger(JmsReaderImpl.class);
 	public final ReplayProcessor<DisruptorPayload> processor = ReplayProcessor.create();
 	private final FluxSink<DisruptorPayload> sink = processor.sink();
-	private final String END_OF_STREAM = "END_OF_STREAM";
+
+	@Value("${input.reader.end.indicator}")
+	private String endIndicator;
 
 	public JmsReaderImpl() {}
 
@@ -45,7 +48,7 @@ public class JmsReaderImpl implements InputReader, MessageListener
 				TextMessage textMessage = (TextMessage) message;
 				logger.info("Received message: " + textMessage.getText());
 
-				if(textMessage.getText().equals(END_OF_STREAM))
+				if(textMessage.getText().equals(endIndicator))
 					sink.complete();
 				else
 					sink.next(new DisruptorPayload(textMessage.getText()));

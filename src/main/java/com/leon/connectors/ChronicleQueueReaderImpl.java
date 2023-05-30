@@ -25,8 +25,8 @@ public class ChronicleQueueReaderImpl implements InputReader
 	@Value("${input.reader.file.path}")
 	private String chronicleFile;
 
-	@Value("${input.writer.end.of.stream}")
-	private String endOfStream;
+	@Value("${input.reader.end.indicator}")
+	private String endIndicator;
 
 	@PostConstruct
 	public void initialize()
@@ -55,9 +55,9 @@ public class ChronicleQueueReaderImpl implements InputReader
 				{
 					String message = wire.read().text();
 
-					if(endOfStream.equals(message))
+					if(endIndicator.equals(message))
 					{
-						logger.info("Reading chronicle queue completed.");
+						logger.info("End indicator received. Reading of chronicle queue completed.");
 						this.completed = true;
 						emitter.complete();
 					}
