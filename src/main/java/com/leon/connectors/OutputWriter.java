@@ -1,4 +1,4 @@
-package com.leon.inputOutput;
+package com.leon.connectors;
 
 public interface OutputWriter
 {

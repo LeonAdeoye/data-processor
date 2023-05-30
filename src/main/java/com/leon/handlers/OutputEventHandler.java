@@ -1,7 +1,7 @@
 package com.leon.handlers;
 
 import com.leon.disruptors.DisruptorEvent;
-import com.leon.inputOutput.OutputWriter;
+import com.leon.connectors.OutputWriter;
 import com.lmax.disruptor.EventHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

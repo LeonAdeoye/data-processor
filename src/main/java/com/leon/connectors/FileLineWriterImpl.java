@@ -1,7 +1,8 @@
-package com.leon.inputOutput;
+package com.leon.connectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -9,6 +10,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 @Component
+@ConditionalOnProperty(value="file.output.writer", havingValue = "true")
 public class FileLineWriterImpl implements OutputWriter
 {
 	private static final Logger logger = LoggerFactory.getLogger(FileLineWriterImpl.class);

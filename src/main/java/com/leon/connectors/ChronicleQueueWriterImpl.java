@@ -1,12 +1,14 @@
-package com.leon.inputOutput;
+package com.leon.connectors;
 
 import net.openhft.chronicle.queue.ChronicleQueue;
 import net.openhft.chronicle.queue.ExcerptAppender;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 @Component
+@ConditionalOnProperty(value="chronicle.queue.output.writer", havingValue = "true")
 public class ChronicleQueueWriterImpl implements OutputWriter
 {
 	private static final Logger logger = LoggerFactory.getLogger(ChronicleQueueWriterImpl.class);

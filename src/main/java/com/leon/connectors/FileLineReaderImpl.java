@@ -1,8 +1,9 @@
-package com.leon.inputOutput;
+package com.leon.connectors;
 
 import com.leon.disruptors.DisruptorPayload;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
 import java.io.IOException;
@@ -11,6 +12,7 @@ import java.nio.file.Paths;
 import java.util.stream.Stream;
 
 @Component
+@ConditionalOnProperty(value="file.input.reader", havingValue = "true")
 public class FileLineReaderImpl implements InputReader
 {
 	private static final Logger logger = LoggerFactory.getLogger(FileLineReaderImpl.class);

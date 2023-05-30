@@ -1,4 +1,4 @@
-package com.leon.inputOutput;
+package com.leon.connectors;
 
 import com.leon.disruptors.DisruptorPayload;
 import net.openhft.chronicle.queue.ChronicleQueue;
@@ -7,10 +7,12 @@ import net.openhft.chronicle.queue.RollCycles;
 import net.openhft.chronicle.wire.ReadMarshallable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
 
 @Component
+@ConditionalOnProperty(value="chronicle.queue.input.reader", havingValue = "true")
 public class ChronicleQueueReaderImpl implements InputReader
 {
 	private static final Logger logger = LoggerFactory.getLogger(ChronicleQueueReaderImpl.class);

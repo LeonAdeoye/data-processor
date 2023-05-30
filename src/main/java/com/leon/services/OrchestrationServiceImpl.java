@@ -4,15 +4,12 @@ import com.leon.disruptors.DisruptorService;
 import com.leon.handlers.DataProcessingEventHandler;
 import com.leon.handlers.JournalEventHandler;
 import com.leon.handlers.OutputEventHandler;
-import com.leon.inputOutput.InputReader;
-import com.leon.inputOutput.OutputWriter;
+import com.leon.connectors.InputReader;
+import com.leon.connectors.OutputWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -25,10 +22,10 @@ public class OrchestrationServiceImpl implements OrchestrationService
 	private DisruptorService inboundDisruptor;
 	@Autowired
 	private DisruptorService outboundDisruptor;
-	@Autowired
-	BeanFactory beanFactory;
 
+	@Autowired(required = true)
 	private InputReader inputReader;
+	@Autowired
 	private OutputWriter outputWriter;
 
 	@Value("${input.reader.file.path}")
@@ -50,13 +47,7 @@ public class OrchestrationServiceImpl implements OrchestrationService
 		{
 			logger.info("Starting bootstrapping process...");
 			hasStarted = true;
-
-			ApplicationContext context = new ClassPathXmlApplicationContext(new String[]{"bean-factory.xml"});
-			BeanFactory factory = context;
-
-			OutputWriter outputWriter = (OutputWriter) factory.getBean("outputWriter");
 			outputWriter.initialize(writerFilePath);
-			InputReader inputReader = (InputReader) factory.getBean("inputReader");
 			inputReader.initialize(readerFilePath, endOfStream);
 			dataProcessingEventHandler.setOutboundDisruptor(outboundDisruptor);
 			outboundDisruptor.start("OUTBOUND", new JournalEventHandler(), new OutputEventHandler(outputWriter));
