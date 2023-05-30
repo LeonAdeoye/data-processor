@@ -31,6 +31,9 @@ public class OrchestrationServiceImpl implements OrchestrationService
 	private OutputWriter outputWriter;
 
 	@Autowired
+	private GarbageCollectionInfo garbageCollectionInfo;
+
+	@Autowired
 	private DataProcessingEventHandler dataProcessingEventHandler;
 
 	@Value("${shutdown.sleep.duration}")

@@ -48,6 +48,15 @@ public class DisruptorServiceImpl implements DisruptorService
 		logger.info("Instantiated producer for " + name + " disruptor.");
 	}
 
+	//TODO
+	public long getInboundQueueDepth()
+	{
+		RingBuffer<DisruptorEvent> ringBuffer = disruptor.getRingBuffer();
+		long currentCursor = ringBuffer.getCursor();
+		long currentSequence = ringBuffer.getMinimumGatingSequence();
+		return currentCursor - currentSequence;
+	}
+
 	@Override
 	public void push(DisruptorPayload payLoad)
 	{
