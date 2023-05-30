@@ -1,5 +1,6 @@
 package com.leon.services;
 
+import com.leon.App;
 import com.leon.disruptors.DisruptorService;
 import com.leon.handlers.DataProcessingEventHandler;
 import com.leon.handlers.JournalEventHandler;
@@ -9,8 +10,9 @@ import com.leon.connectors.OutputWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.SpringApplication;
 import org.springframework.stereotype.Service;
+import static java.lang.Thread.sleep;
 
 @Service
 public class OrchestrationServiceImpl implements OrchestrationService
@@ -23,7 +25,7 @@ public class OrchestrationServiceImpl implements OrchestrationService
 	@Autowired
 	private DisruptorService outboundDisruptor;
 
-	@Autowired(required = true)
+	@Autowired
 	private InputReader inputReader;
 	@Autowired
 	private OutputWriter outputWriter;
@@ -50,7 +52,19 @@ public class OrchestrationServiceImpl implements OrchestrationService
 					},
 					() ->
 					{
-						logger.info("Completed processing of input.");
+						logger.info("Completed processing of input. Shutting down all processing components in 10 seconds...");
+						try
+						{
+							sleep(10000);
+						}
+						catch(InterruptedException ie)
+						{
+							logger.error("Interrupted exception thrown while sleeping after completion of data processing.");
+						}
+						finally
+						{
+							this.stop();
+						}
 					});
 		}
 		else
@@ -64,5 +78,7 @@ public class OrchestrationServiceImpl implements OrchestrationService
 		outputWriter.stop();
 		inboundDisruptor.stop();
 		outboundDisruptor.stop();
+		int exitCode = SpringApplication.exit(App.context, () -> 0);
+		System.exit(exitCode);
 	}
 }

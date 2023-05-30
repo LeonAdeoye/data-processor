@@ -5,19 +5,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.jms.annotation.EnableJms;
-import javax.annotation.PostConstruct;
 
 @EnableJms
 @SpringBootApplication
 public class App implements CommandLineRunner
 {
     @Autowired
-	OrchestrationService orchestrationService;
+	private OrchestrationService orchestrationService;
+    public static ConfigurableApplicationContext context;
 
     public static void main(String[] args)
     {
-        SpringApplication.run(App.class, args);
+        context = SpringApplication.run(App.class, args);
     }
 
     @Override
