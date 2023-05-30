@@ -10,6 +10,7 @@ import com.leon.connectors.OutputWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.stereotype.Service;
 import static java.lang.Thread.sleep;
@@ -18,7 +19,6 @@ import static java.lang.Thread.sleep;
 public class OrchestrationServiceImpl implements OrchestrationService
 {
 	private static final Logger logger = LoggerFactory.getLogger(OrchestrationServiceImpl.class);
-	private boolean hasStarted = false;
 
 	@Autowired
 	private DisruptorService inboundDisruptor;
@@ -33,38 +33,37 @@ public class OrchestrationServiceImpl implements OrchestrationService
 	@Autowired
 	private DataProcessingEventHandler dataProcessingEventHandler;
 
+	@Value("${shutdown.sleep.duration}")
+	private long shutdownSleepDuration;
+
 	@Override
 	public void start()
 	{
-		if(!hasStarted)
-		{
-			logger.info("Starting bootstrapping process...");
-			hasStarted = true;
-			dataProcessingEventHandler.setOutboundDisruptor(outboundDisruptor);
-			outboundDisruptor.start("OUTBOUND", new JournalEventHandler(), new OutputEventHandler(outputWriter));
-			inboundDisruptor.start("INBOUND", new JournalEventHandler(), dataProcessingEventHandler);
+		logger.info("Starting bootstrapping process...");
+		dataProcessingEventHandler.setOutboundDisruptor(outboundDisruptor);
+		outboundDisruptor.start("OUTBOUND", new JournalEventHandler(), new OutputEventHandler(outputWriter));
+		inboundDisruptor.start("INBOUND", new JournalEventHandler(), dataProcessingEventHandler);
 
-			inputReader.read().subscribe(
-					inboundDisruptor::push,
-					err ->
-					{
-						logger.error(err.getMessage());
-					},
-					() ->
-					{
-						logger.info("Completed processing of input.");
-						stop();
-					});
-		}
+		inputReader.read().subscribe(
+			inboundDisruptor::push,
+			err ->
+			{
+				logger.error(err.getMessage());
+			},
+			() ->
+			{
+				logger.info("Completed processing of all input.");
+				stop();
+			});
 	}
 
 	@Override
 	public void stop()
 	{
-		logger.info("Shutting down all processing components in 10 seconds...");
 		try
 		{
-			sleep(10000);
+			logger.info("Shutting down all processing components in {} milliseconds...", shutdownSleepDuration);
+			sleep(shutdownSleepDuration);
 		}
 		catch(InterruptedException ie)
 		{
