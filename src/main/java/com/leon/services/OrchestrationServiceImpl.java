@@ -52,33 +52,32 @@ public class OrchestrationServiceImpl implements OrchestrationService
 					},
 					() ->
 					{
-						logger.info("Completed processing of input. Shutting down all processing components in 10 seconds...");
-						try
-						{
-							sleep(10000);
-						}
-						catch(InterruptedException ie)
-						{
-							logger.error("Interrupted exception thrown while sleeping after completion of data processing.");
-						}
-						finally
-						{
-							this.stop();
-						}
+						logger.info("Completed processing of input.");
+						stop();
 					});
 		}
-		else
-			logger.error("Bootstrapper has already started.");
 	}
 
 	@Override
 	public void stop()
 	{
-		inputReader.stop();
-		outputWriter.stop();
-		inboundDisruptor.stop();
-		outboundDisruptor.stop();
-		int exitCode = SpringApplication.exit(App.context, () -> 0);
-		System.exit(exitCode);
+		logger.info("Shutting down all processing components in 10 seconds...");
+		try
+		{
+			sleep(10000);
+		}
+		catch(InterruptedException ie)
+		{
+			logger.error("Interrupted exception thrown while sleeping after completion of data processing.");
+		}
+		finally
+		{
+			inputReader.stop();
+			outputWriter.stop();
+			inboundDisruptor.stop();
+			outboundDisruptor.stop();
+			int exitCode = SpringApplication.exit(App.context, () -> 0);
+			System.exit(exitCode);
+		}
 	}
 }
