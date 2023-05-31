@@ -52,9 +52,9 @@
     </appender>
 
     <logger name="com.leon.services" level="INFO" />
-    <logger name="com.leon.disruptors" level="INFO" />
+    <logger name="com.leon.disruptors" level="DEBUG" />
     <logger name="com.leon.models" level="INFO" />
-    <logger name="com.leon.connectors" level="INFO" />
+    <logger name="com.leon.connectors" level="DEBUG" />
     <logger name="com.leon.handlers" level="INFO" />
     <logger name="com.leon.handlers.OutboundJournalEventHandler" level="INFO">
         <appender-ref ref="ASYNC_OUTBOUND_JOURNAL_FILE"/>

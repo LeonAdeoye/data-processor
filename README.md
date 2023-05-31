@@ -1,18 +1,19 @@
 Garbage collection telemetry
 
-factory method
-
-Mongo DB write/read
+MongoDB write/read
 
 AMPS read/write
 
-Chronicle Queue
+Chronicle queue
 
 WebSocket read/write
 
 Active MQ read/write
 
-Stats
+File read and write
 
-Scheduler
+Inbound and outbound disruptors
+
+Reactive streams.
+
 

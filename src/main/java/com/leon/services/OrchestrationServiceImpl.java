@@ -1,6 +1,5 @@
 package com.leon.services;
 
-import com.leon.App;
 import com.leon.disruptors.DisruptorService;
 import com.leon.handlers.DataProcessingEventHandler;
 import com.leon.handlers.JournalEventHandler;
@@ -12,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import static java.lang.Thread.sleep;
 
@@ -31,10 +31,13 @@ public class OrchestrationServiceImpl implements OrchestrationService
 	private OutputWriter outputWriter;
 
 	@Autowired
-	private GarbageCollectionInfo garbageCollectionInfo;
+	private GarbageCollectionNotifier garbageCollectionNotifier;
 
 	@Autowired
 	private DataProcessingEventHandler dataProcessingEventHandler;
+
+	@Autowired
+	ApplicationContext applicationContext;
 
 	@Value("${shutdown.sleep.duration}")
 	private long shutdownSleepDuration;
@@ -43,6 +46,7 @@ public class OrchestrationServiceImpl implements OrchestrationService
 	public void start()
 	{
 		logger.info("Starting bootstrapping process...");
+		garbageCollectionNotifier.createNotification();
 		dataProcessingEventHandler.setOutboundDisruptor(outboundDisruptor);
 		outboundDisruptor.start("OUTBOUND", new JournalEventHandler(), new OutputEventHandler(outputWriter));
 		inboundDisruptor.start("INBOUND", new JournalEventHandler(), dataProcessingEventHandler);
@@ -65,7 +69,7 @@ public class OrchestrationServiceImpl implements OrchestrationService
 	{
 		try
 		{
-			logger.info("Shutting down all processing components in {} milliseconds...", shutdownSleepDuration);
+			logger.info("Shutting down all processing components in {} ms.", shutdownSleepDuration);
 			sleep(shutdownSleepDuration);
 		}
 		catch(InterruptedException ie)
@@ -78,7 +82,7 @@ public class OrchestrationServiceImpl implements OrchestrationService
 			outputWriter.stop();
 			inboundDisruptor.stop();
 			outboundDisruptor.stop();
-			int exitCode = SpringApplication.exit(App.context, () -> 0);
+			int exitCode = SpringApplication.exit(applicationContext, () -> 0);
 			System.exit(exitCode);
 		}
 	}

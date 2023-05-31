@@ -27,7 +27,7 @@ public class DataProcessingEventHandler implements EventHandler<DisruptorEvent>
 
 	private void process(DisruptorEvent disruptorEvent)
 	{
-		logger.info(disruptorEvent.getPayload().toString());
+		logger.debug(disruptorEvent.getPayload().toString());
 		this.outboundDisruptor.push(disruptorEvent.getPayload());
 	}
 }

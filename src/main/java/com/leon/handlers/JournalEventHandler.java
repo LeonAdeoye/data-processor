@@ -12,6 +12,6 @@ public class JournalEventHandler implements EventHandler<DisruptorEvent>
 	@Override
 	public void onEvent(DisruptorEvent event, long sequence, boolean enfOfBatch)
 	{
-		logger.info(event.getPayload().toString());
+		logger.debug(event.getPayload().toString());
 	}
 }
