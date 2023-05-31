@@ -21,7 +21,7 @@
     <chronicle.queue.version>5.22.28</chronicle.queue.version>
     <reactor-core.version>3.3.9.RELEASE</reactor-core.version>
     <lmax-disruptor.version>3.4.4</lmax-disruptor.version>
-    <lmax-disruptor.version>3.4.4</lmax-disruptor.version>
+    <junit.version>4.11</junit.version>
     <junit-vintage-engine.version>5.6.3</junit-vintage-engine.version>
   </properties>
 
@@ -35,7 +35,7 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>4.11</version>
+      <version>${junit.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
