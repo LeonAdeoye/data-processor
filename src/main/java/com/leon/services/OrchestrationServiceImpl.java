@@ -31,9 +31,6 @@ public class OrchestrationServiceImpl implements OrchestrationService
 	private OutputWriter outputWriter;
 
 	@Autowired
-	private GarbageCollectionNotifier garbageCollectionNotifier;
-
-	@Autowired
 	private DataProcessingEventHandler dataProcessingEventHandler;
 
 	@Autowired
@@ -46,7 +43,6 @@ public class OrchestrationServiceImpl implements OrchestrationService
 	public void start()
 	{
 		logger.info("Starting bootstrapping process...");
-		garbageCollectionNotifier.createNotification();
 		dataProcessingEventHandler.setOutboundDisruptor(outboundDisruptor);
 		outboundDisruptor.start("OUTBOUND", new JournalEventHandler(), new OutputEventHandler(outputWriter));
 		inboundDisruptor.start("INBOUND", new JournalEventHandler(), dataProcessingEventHandler);

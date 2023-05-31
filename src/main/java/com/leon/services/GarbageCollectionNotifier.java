@@ -4,6 +4,7 @@ import com.sun.management.GarbageCollectionNotificationInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import javax.annotation.PostConstruct;
 import javax.management.*;
 import javax.management.openmbean.CompositeData;
 import java.lang.management.*;
@@ -15,6 +16,7 @@ public class GarbageCollectionNotifier
 {
 	private static final Logger logger = LoggerFactory.getLogger(GarbageCollectionNotifier.class);
 
+	@PostConstruct
 	public void createNotification()
 	{
 		List<GarbageCollectorMXBean> garbageCollectorMXBeans = ManagementFactory.getGarbageCollectorMXBeans();
