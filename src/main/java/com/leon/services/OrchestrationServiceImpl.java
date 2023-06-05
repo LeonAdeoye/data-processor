@@ -24,15 +24,12 @@ public class OrchestrationServiceImpl implements OrchestrationService
 	private DisruptorService inboundDisruptor;
 	@Autowired
 	private DisruptorService outboundDisruptor;
-
 	@Autowired
 	private InputReader inputReader;
 	@Autowired
 	private OutputWriter outputWriter;
-
 	@Autowired
 	private DataProcessingEventHandler dataProcessingEventHandler;
-
 	@Autowired
 	ApplicationContext applicationContext;
 
@@ -50,11 +47,7 @@ public class OrchestrationServiceImpl implements OrchestrationService
 		inputReader.read().subscribe(
 			inboundDisruptor::push,
 			err -> logger.error(err.getMessage()),
-			() ->
-			{
-				logger.info("Completed processing of all input.");
-				stop();
-			});
+			() -> stop());
 	}
 
 	@Override
