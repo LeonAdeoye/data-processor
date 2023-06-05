@@ -43,20 +43,20 @@ public class DisruptorServiceImpl implements DisruptorService
 		DisruptorEventFactory factory = new DisruptorEventFactory();
 
 		// Construct the Disruptor
-		disruptor = new Disruptor<DisruptorEvent>(factory, bufferSize, DaemonThreadFactory.INSTANCE, ProducerType.SINGLE, new BusySpinWaitStrategy());
-		logger.info("Created " + name + " disruptor with buffer size: " + bufferSize);
+		disruptor = new Disruptor<>(factory, bufferSize, DaemonThreadFactory.INSTANCE, ProducerType.SINGLE, new BusySpinWaitStrategy());
+		logger.info("Created {} disruptor with buffer size: {}", name, bufferSize);
 
 		disruptor.handleEventsWith(journalHandler, actionEventHandler);
 
 		// Start the Disruptor, starts all threads running
 		disruptor.start();
-		logger.info("Started " + name + " disruptor.");
+		logger.info("Started {} disruptor.", name);
 
 		// Get the ring buffer from the Disruptor to be used for publishing.
 		RingBuffer<DisruptorEvent> ringBuffer = disruptor.getRingBuffer();
 		producer = new DisruptorEventProducer(ringBuffer);
 		hasStarted = true;
-		logger.info("Instantiated producer for " + name + " disruptor.");
+		logger.info("Instantiated producer for {} disruptor.", name);
 	}
 
 	@Scheduled(cron = "*/1 * * * * *")
@@ -91,9 +91,9 @@ public class DisruptorServiceImpl implements DisruptorService
 			Instant end = Instant.now();
 			logger.info("{} events were processed by {} disruptor. Time taken approximately {} ms.", counter, name, Duration.between(start, end).toMillis() - shutdownSleepDuration);
 			disruptor.halt();
-			logger.info("Halted " + name + " disruptor");
+			logger.info("Halted {} disruptor", name);
 			disruptor.shutdown();
-			logger.info("Shutdown " + name + " disruptor");
+			logger.info("Shutdown {} disruptor", name);
 		}
 	}
 }

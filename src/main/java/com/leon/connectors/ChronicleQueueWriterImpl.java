@@ -30,7 +30,7 @@ public class ChronicleQueueWriterImpl implements OutputWriter
 		}
 		catch(Exception e)
 		{
-			logger.error("Failed to initialize the chronicle queue writer because of exception: " + e.getMessage());
+			logger.error("Failed to initialize the chronicle queue writer because of exception: {}", e.getMessage());
 		}
 	}
 
@@ -43,7 +43,7 @@ public class ChronicleQueueWriterImpl implements OutputWriter
 		}
 		catch (Exception e)
 		{
-			logger.error("Failed to close chronicle queue because of exception: " + e.getMessage());
+			logger.error("Failed to close chronicle queue because of exception: {}", e.getMessage());
 		}
 	}
 
@@ -56,7 +56,7 @@ public class ChronicleQueueWriterImpl implements OutputWriter
 		}
 		catch(Exception e)
 		{
-			logger.error("Failed to write to chronicle queue because of exception: " + e.getMessage());
+			logger.error("Failed to write to chronicle queue because of exception: {}", e.getMessage());
 		}
 	}
 }

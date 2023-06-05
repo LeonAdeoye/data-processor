@@ -49,10 +49,7 @@ public class OrchestrationServiceImpl implements OrchestrationService
 
 		inputReader.read().subscribe(
 			inboundDisruptor::push,
-			err ->
-			{
-				logger.error(err.getMessage());
-			},
+			err -> logger.error(err.getMessage()),
 			() ->
 			{
 				logger.info("Completed processing of all input.");
@@ -71,6 +68,7 @@ public class OrchestrationServiceImpl implements OrchestrationService
 		catch(InterruptedException ie)
 		{
 			logger.error("Interrupted exception thrown while sleeping after completion of data processing.");
+			Thread.currentThread().interrupt();
 		}
 		finally
 		{

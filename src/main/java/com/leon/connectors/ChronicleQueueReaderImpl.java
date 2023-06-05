@@ -38,7 +38,7 @@ public class ChronicleQueueReaderImpl implements InputReader
 		}
 		catch(Exception e)
 		{
-			logger.error("Failed to initialize chronicle queue tailer because of exception: " + e.getMessage());
+			logger.error("Failed to initialize chronicle queue tailer because of exception: {}", e.getMessage());
 		}
 	}
 

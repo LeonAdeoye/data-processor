@@ -24,7 +24,7 @@ public class FileLineReaderImpl implements InputReader
 	@Override
 	public Flux<DisruptorPayload> read()
 	{
-		logger.info("Reading file: " + filePath + " and creating a Flux...");
+		logger.info("Reading file: {} and creating a Flux...", filePath);
 		return Flux.create(emitter ->
 		{
 			try (Stream<String> linesStream = Files.lines(Paths.get(filePath)))

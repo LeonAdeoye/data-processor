@@ -28,7 +28,7 @@ public class GarbageCollectionNotifier
 				if(notification.getType().equals(GarbageCollectionNotificationInfo.GARBAGE_COLLECTION_NOTIFICATION))
 				{
 					GarbageCollectionNotificationInfo info = GarbageCollectionNotificationInfo.from((CompositeData) notification.getUserData());
-					logger.info(info.getGcAction() + " " + info.getGcName() + " from " + info.getGcCause() + ", duration: " + info.getGcInfo().getDuration() + "ms");
+					logger.info("{} {} from: {}, duration: {} ms", info.getGcAction(), info.getGcName(), info.getGcCause(), info.getGcInfo().getDuration() );
 					Map<String, MemoryUsage> memoryAfter = info.getGcInfo().getMemoryUsageAfterGc();
 					for(Map.Entry<String, MemoryUsage> entry : memoryAfter.entrySet())
 					{

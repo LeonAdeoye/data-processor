@@ -104,6 +104,15 @@
       <artifactId>chronicle-queue</artifactId>
       <version>${chronicle.queue.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-data-mongodb</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.kx.javakdb</groupId>
+      <artifactId>javakdb</artifactId>
+      <version>1.0-SNAPSHOT</version>
+    </dependency>
   </dependencies>
 
   <build>

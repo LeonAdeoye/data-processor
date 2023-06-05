@@ -33,7 +33,7 @@ public class FileLineWriterImpl implements OutputWriter
 	{
 		try
 		{
-			logger.info("Opening file: " + filePath + " for writing.");
+			logger.info("Opening file: {} for writing.", filePath);
 			writer = Files.newBufferedWriter(Paths.get(filePath), StandardCharsets.UTF_8, StandardOpenOption.CREATE,
 					StandardOpenOption.WRITE, StandardOpenOption.APPEND);
 		}

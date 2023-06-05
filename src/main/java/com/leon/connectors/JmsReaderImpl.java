@@ -24,8 +24,6 @@ public class JmsReaderImpl implements InputReader, MessageListener
 	@Value("${input.reader.end.indicator}")
 	private String endIndicator;
 
-	public JmsReaderImpl() {}
-
 	@Override
 	public Flux<DisruptorPayload> read()
 	{
@@ -46,7 +44,7 @@ public class JmsReaderImpl implements InputReader, MessageListener
 			if (message instanceof TextMessage)
 			{
 				TextMessage textMessage = (TextMessage) message;
-				logger.info("Received message: " + textMessage.getText());
+				logger.info("Received message: {}", textMessage.getText());
 
 				if(textMessage.getText().equals(endIndicator))
 					sink.complete();
@@ -56,7 +54,7 @@ public class JmsReaderImpl implements InputReader, MessageListener
 		}
 		catch (Exception e)
 		{
-			logger.error("Received Exception with processing message from JMS listener: " + e.getLocalizedMessage());
+			logger.error("Received Exception with processing message from JMS listener: {}", e.getLocalizedMessage());
 			sink.error(e);
 		}
 	}
