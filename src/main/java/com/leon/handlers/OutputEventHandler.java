@@ -17,7 +17,7 @@ public class OutputEventHandler implements EventHandler<DisruptorEvent>
 	}
 
 	@Override
-	public void onEvent(DisruptorEvent disruptorEvent, long sequence, boolean endOfBatch)
+	public void onEvent(DisruptorEvent disruptorEvent, long sequence, boolean endOfBatch) throws Exception
 	{
 		if(writer != null)
 			this.writer.write(disruptorEvent.getPayload().toString());
