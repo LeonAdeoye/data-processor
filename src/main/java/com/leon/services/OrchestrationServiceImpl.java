@@ -47,7 +47,7 @@ public class OrchestrationServiceImpl implements OrchestrationService
 		inputReader.read().subscribe(
 			inboundDisruptor::push,
 			err -> logger.error(err.getMessage()),
-			() -> stop());
+			this::stop);
 	}
 
 	@Override
