@@ -55,7 +55,7 @@ public class OrchestrationServiceImpl implements OrchestrationService
 	{
 		try
 		{
-			logger.info("Shutting down all processing components in {} ms.", shutdownSleepDuration);
+			logger.info("Completed processing. Shutting down all components in {} ms.", shutdownSleepDuration);
 			sleep(shutdownSleepDuration);
 		}
 		catch(InterruptedException ie)
