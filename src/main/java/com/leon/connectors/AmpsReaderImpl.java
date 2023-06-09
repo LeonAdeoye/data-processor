@@ -20,9 +20,9 @@ import javax.annotation.PostConstruct;
 public class AmpsReaderImpl implements InputReader
 {
 	private static final Logger logger = LoggerFactory.getLogger(AmpsReaderImpl.class);
-	private Client amps = null;
 	public final ReplayProcessor<DisruptorPayload> processor = ReplayProcessor.create();
 	private final FluxSink<DisruptorPayload> sink = processor.sink();
+	private Client amps = null;
 
 	@Value("${input.reader.end.indicator}")
 	private String endIndicator;
@@ -32,15 +32,16 @@ public class AmpsReaderImpl implements InputReader
 	private String connectionString;
 	@Value("${input.reader.amps.topic}")
 	private String topic;
-	@Value("${input.reader.amps.filter}") // "/symbol LIKE 'ABCD'"
+	@Value("${input.reader.amps.filter}")
 	private String filter;
 
 	@PostConstruct
 	public void initialize()
 	{
-		amps = new Client(name);
 		try
 		{
+			logger.info("Instantiating client {} and initializing AMPS connection: {}", name, connectionString);
+			amps = new Client(name);
 			amps.connect(connectionString);
 			amps.logon();
 		}
@@ -81,6 +82,7 @@ public class AmpsReaderImpl implements InputReader
 	@Override
 	public void stop()
 	{
+		amps.disconnect();
 		amps.close();
 	}
 }

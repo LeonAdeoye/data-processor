@@ -19,7 +19,6 @@ public class AmpsWriterImpl implements OutputWriter
 
 	@Value("${output.writer.amps.name}")
 	private String name;
-
 	@Value("${output.writer.amps.connection.string}")
 	private String connectionString;
 
@@ -30,8 +29,8 @@ public class AmpsWriterImpl implements OutputWriter
 	{
 		try
 		{
+			logger.info("Instantiating client {} and initializing AMPS connection: {}", name, connectionString);
 			amps = new Client(name);
-			logger.info("Initializing AMPS connection: {}", connectionString);
 			amps.connect(connectionString);
 			amps.logon();
 		}
