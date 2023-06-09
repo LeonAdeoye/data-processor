@@ -8,7 +8,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
-
 import javax.annotation.PostConstruct;
 
 @Component
@@ -21,6 +20,8 @@ public class AmpsWriterImpl implements OutputWriter
 	private String name;
 	@Value("${output.writer.amps.connection.string}")
 	private String connectionString;
+	@Value("${output.writer.amps.topic}")
+	private String topic;
 
 	private Client amps = null;
 
@@ -47,10 +48,10 @@ public class AmpsWriterImpl implements OutputWriter
 	@Override
 	public void write(String output)
 	{
-
+		//OUTPUT STRING IS JSON: "{\"symbol\":\"ABCD\",\"price\":100.0,\"quantity\":1000}"
 		try
 		{
-			amps.publish("orders", "{\"symbol\":\"ABCD\",\"price\":100.0,\"quantity\":1000}");
+			amps.publish(topic, output);
 		}
 		catch (AMPSException ae)
 		{
