@@ -41,7 +41,7 @@ public class AmpsWriterImpl implements OutputWriter
 		}
 		catch (AMPSException ae)
 		{
-			ae.printStackTrace();
+			logger.error(ae.getMessage());
 		}
 	}
 
