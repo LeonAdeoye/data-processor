@@ -20,6 +20,6 @@ public class OutputEventHandler implements EventHandler<DisruptorEvent>
 	public void onEvent(DisruptorEvent disruptorEvent, long sequence, boolean endOfBatch) throws Exception
 	{
 		if(writer != null)
-			this.writer.write(disruptorEvent.getPayload().toString());
+			this.writer.write(disruptorEvent.getPayload().getPayload());
 	}
 }

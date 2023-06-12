@@ -1,29 +1,55 @@
 package com.leon.connectors;
 
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
+import org.bson.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
-
+import javax.annotation.PostConstruct;
 
 @Component
 @ConditionalOnProperty(value="mongodb.output.writer", havingValue = "true")
 public class MongoDBWriterImpl implements OutputWriter
 {
 	private static final Logger logger = LoggerFactory.getLogger(MongoDBWriterImpl.class);
-	@Autowired
-	private MongoDBClientConfig mongoDBClientConfig;
+
+	@Value("${mongodb.collection.name}")
+	private String collectionName;
+	@Value("${mongodb.database.name}")
+	private String databaseName;
+	@Value("${mongodb.connection.uri}")
+	private String connectionURI;
+
+	private MongoClient client;
+	private MongoDatabase database;
+	private MongoCollection<Document> collection;
+	private int counter = 0;
+
+	@PostConstruct
+	public void initialize()
+	{
+		logger.info("Initializing MongoDB connection to database {} and collection {}", databaseName, collectionName);
+		client = MongoClients.create(connectionURI);
+		database = client.getDatabase( databaseName);
+		collection = database.getCollection(collectionName);
+	}
 
 	@Override
 	public void write(String output)
 	{
-		mongoDBClientConfig.mongoTemplate().insert(output);
+		collection.insertOne(Document.parse(output));
+		counter++;
 	}
 
 	@Override
 	public void stop()
 	{
-		logger.info("Closing MongoDB connection...");
+		logger.info("Closing MongoDB connection after writing {} documents", counter);
+		client.close();
 	}
 }
