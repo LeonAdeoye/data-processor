@@ -33,17 +33,32 @@ public class MongoDBWriterImpl implements OutputWriter
 	@PostConstruct
 	public void initialize()
 	{
-		logger.info("Initializing MongoDB connection to database {} and collection {}", databaseName, collectionName);
-		client = MongoClients.create(connectionURI);
-		database = client.getDatabase( databaseName);
-		collection = database.getCollection(collectionName);
+		try
+		{
+			logger.info("Initializing MongoDB connection to database {} and collection {}", databaseName, collectionName);
+			client = MongoClients.create(connectionURI);
+			database = client.getDatabase( databaseName);
+			collection = database.getCollection(collectionName);
+		}
+		catch (Exception e)
+		{
+			logger.error("Exception thrown while initializing connection to Mongo DB: {}", e.getMessage());
+		}
+
 	}
 
 	@Override
 	public void write(String output)
 	{
-		collection.insertOne(Document.parse(output));
-		counter++;
+		try
+		{
+			collection.insertOne(Document.parse(output));
+			counter++;
+		}
+		catch (Exception e)
+		{
+			logger.error("Exception thrown while writing to Mongo DB: {}", e.getMessage());
+		}
 	}
 
 	@Override
