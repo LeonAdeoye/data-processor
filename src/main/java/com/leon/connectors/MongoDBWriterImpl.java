@@ -1,5 +1,6 @@
 package com.leon.connectors;
 
+import com.leon.services.JsonValidator;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
@@ -24,6 +25,8 @@ public class MongoDBWriterImpl implements OutputWriter
 	private String databaseName;
 	@Value("${mongodb.connection.uri}")
 	private String connectionURI;
+	@Value("${check.json.validity}")
+	private boolean checkJsonValidity;
 
 	private MongoClient client;
 	private MongoDatabase database;
@@ -44,7 +47,6 @@ public class MongoDBWriterImpl implements OutputWriter
 		{
 			logger.error("Exception thrown while initializing connection to Mongo DB: {}", e.getMessage());
 		}
-
 	}
 
 	@Override
@@ -52,8 +54,12 @@ public class MongoDBWriterImpl implements OutputWriter
 	{
 		try
 		{
-			collection.insertOne(Document.parse(output));
-			counter++;
+			// Either checkJsonValidity is false or checkJsonValidity is true and output is also valid JSON.
+			if(!checkJsonValidity || (checkJsonValidity && JsonValidator.isValid(output)))
+			{
+				collection.insertOne(Document.parse(output));
+				counter++;
+			}
 		}
 		catch (Exception e)
 		{
