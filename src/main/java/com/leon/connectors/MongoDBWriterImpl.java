@@ -12,6 +12,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
+import java.util.ArrayList;
+import java.util.List;
 
 @Component
 @ConditionalOnProperty(value="mongodb.output.writer", havingValue = "true")
@@ -19,19 +21,23 @@ public class MongoDBWriterImpl implements OutputWriter
 {
 	private static final Logger logger = LoggerFactory.getLogger(MongoDBWriterImpl.class);
 
-	@Value("${mongodb.collection.name}")
+	@Value("${mongodb.writer.collection.name}")
 	private String collectionName;
-	@Value("${mongodb.database.name}")
+	@Value("${mongodb.writer.database.name}")
 	private String databaseName;
-	@Value("${mongodb.connection.uri}")
+	@Value("${mongodb.writer.connection.uri}")
 	private String connectionURI;
-	@Value("${check.json.validity}")
+	@Value("${check.json.validity:false}")
 	private boolean checkJsonValidity;
+	@Value("${mongodb.writer.batch.size:1}")
+	private int batchSize;
 
+	private List<Document> batch;
 	private MongoClient client;
 	private MongoDatabase database;
 	private MongoCollection<Document> collection;
 	private int counter = 0;
+	private int batchCounter = 0;
 
 	@PostConstruct
 	public void initialize()
@@ -42,6 +48,7 @@ public class MongoDBWriterImpl implements OutputWriter
 			client = MongoClients.create(connectionURI);
 			database = client.getDatabase( databaseName);
 			collection = database.getCollection(collectionName);
+			batch = new ArrayList<>(batchSize);
 		}
 		catch (Exception e)
 		{
@@ -57,8 +64,23 @@ public class MongoDBWriterImpl implements OutputWriter
 			// Either checkJsonValidity is false or checkJsonValidity is true and output is also valid JSON.
 			if(!checkJsonValidity || (checkJsonValidity && JsonValidator.isValid(output)))
 			{
-				collection.insertOne(Document.parse(output));
-				counter++;
+				if(batchSize > 1)
+				{
+					batch.add(Document.parse(output));
+					if(++batchCounter == batchSize)
+					{
+						logger.info("Writing batch of {} documents to MongoDB", batchCounter);
+						collection.insertMany(batch);
+						counter += batchCounter;
+						batch.clear();
+						batchCounter = 0;
+					}
+				}
+				else
+				{
+					collection.insertOne(Document.parse(output));
+					counter++;
+				}
 			}
 		}
 		catch (Exception e)
@@ -70,7 +92,16 @@ public class MongoDBWriterImpl implements OutputWriter
 	@Override
 	public void stop()
 	{
-		logger.info("Closing MongoDB connection after writing {} documents", counter);
+		if(batchCounter > 0)
+		{
+			logger.info("Before closing the client connection, writing remaining batch of {} documents to MongoDB", batchCounter);
+			collection.insertMany(batch);
+			counter += batchCounter;
+			batch.clear();
+			batchCounter = 0;
+		}
+
+		logger.info("Closing MongoDB connection to database {} and collection {} after writing {} documents", databaseName, collectionName, counter);
 		client.close();
 	}
 }

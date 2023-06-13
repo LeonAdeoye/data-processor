@@ -28,10 +28,10 @@ public class DisruptorServiceImpl implements DisruptorService
 	private boolean hasStarted;
 	private Instant start;
 
-	@Value("${disruptor.buffer.size}")
+	@Value("${disruptor.buffer.size:4096}")
 	private int bufferSize;
 
-	@Value("${shutdown.sleep.duration}")
+	@Value("${shutdown.sleep.duration:5000}")
 	private long shutdownSleepDuration;
 
 	@Override
