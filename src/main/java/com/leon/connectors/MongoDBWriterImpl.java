@@ -56,6 +56,15 @@ public class MongoDBWriterImpl implements OutputWriter
 		}
 	}
 
+	private void writeBatch()
+	{
+		logger.info("Writing batch of {} documents to MongoDB", batchCounter);
+		collection.insertMany(batch);
+		counter += batchCounter;
+		batch.clear();
+		batchCounter = 0;
+	}
+
 	@Override
 	public void write(String output)
 	{
@@ -67,14 +76,9 @@ public class MongoDBWriterImpl implements OutputWriter
 				if(batchSize > 1)
 				{
 					batch.add(Document.parse(output));
+
 					if(++batchCounter == batchSize)
-					{
-						logger.info("Writing batch of {} documents to MongoDB", batchCounter);
-						collection.insertMany(batch);
-						counter += batchCounter;
-						batch.clear();
-						batchCounter = 0;
-					}
+						writeBatch();
 				}
 				else
 				{
@@ -93,13 +97,7 @@ public class MongoDBWriterImpl implements OutputWriter
 	public void stop()
 	{
 		if(batchCounter > 0)
-		{
-			logger.info("Before closing the client connection, writing remaining batch of {} documents to MongoDB", batchCounter);
-			collection.insertMany(batch);
-			counter += batchCounter;
-			batch.clear();
-			batchCounter = 0;
-		}
+			writeBatch();
 
 		logger.info("Closing MongoDB connection to database {} and collection {} after writing {} documents", databaseName, collectionName, counter);
 		client.close();
