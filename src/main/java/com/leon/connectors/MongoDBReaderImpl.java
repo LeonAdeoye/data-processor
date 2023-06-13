@@ -1,18 +1,18 @@
 package com.leon.connectors;
 
 import com.leon.disruptors.DisruptorPayload;
-import com.mongodb.client.MongoClient;
-import com.mongodb.client.MongoClients;
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.*;
 import org.bson.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
-
 import javax.annotation.PostConstruct;
 
+@Component
+@ConditionalOnProperty(value="mongodb.input.reader", havingValue = "true")
 public class MongoDBReaderImpl implements InputReader
 {
 	private static final Logger logger = LoggerFactory.getLogger(MongoDBReaderImpl.class);
@@ -34,21 +34,39 @@ public class MongoDBReaderImpl implements InputReader
 	{
 		try
 		{
-			logger.info("Initializing MongoDB connection to database {} and collection {}", databaseName, collectionName);
+			logger.info("Initializing MongoDB connection to database {} and collection {} for .", databaseName, collectionName);
 			client = MongoClients.create(connectionURI);
 			database = client.getDatabase( databaseName);
 			collection = database.getCollection(collectionName);
 		}
 		catch (Exception e)
 		{
-			logger.error("Exception thrown while initializing connection to Mongo DB: {}", e.getMessage());
+			logger.error("Exception thrown while initializing connection to Mongo DB: {} for reading.", e.getMessage());
 		}
 	}
 
 	@Override
 	public Flux<DisruptorPayload> read()
 	{
-		return null;
+		logger.info("Reading MongoDB records from collection {} and database: {}", collectionName, databaseName);
+		return Flux.create(emitter ->
+		{
+			try
+			{
+				FindIterable<Document> documents = collection.find();
+				documents.forEach((Document document) ->
+				{
+					counter++;
+					emitter.next(new DisruptorPayload(document.toJson()));
+				});
+				emitter.complete();
+			}
+			catch(Exception e)
+			{
+				emitter.error(e);
+				logger.error(e.getMessage());
+			}
+		});
 	}
 
 	@Override

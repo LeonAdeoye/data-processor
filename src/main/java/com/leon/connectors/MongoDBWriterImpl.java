@@ -29,7 +29,7 @@ public class MongoDBWriterImpl implements OutputWriter
 	private String connectionURI;
 	@Value("${check.json.validity:false}")
 	private boolean checkJsonValidity;
-	@Value("${mongodb.writer.batch.size:1}")
+	@Value("${mongodb.writer.batch.size:0}")
 	private int batchSize;
 
 	private List<Document> batch;
@@ -44,7 +44,7 @@ public class MongoDBWriterImpl implements OutputWriter
 	{
 		try
 		{
-			logger.info("Initializing MongoDB connection to database {} and collection {}", databaseName, collectionName);
+			logger.info("Initializing MongoDB connection to database {} and collection {} for writing.", databaseName, collectionName);
 			client = MongoClients.create(connectionURI);
 			database = client.getDatabase( databaseName);
 			collection = database.getCollection(collectionName);
@@ -52,7 +52,7 @@ public class MongoDBWriterImpl implements OutputWriter
 		}
 		catch (Exception e)
 		{
-			logger.error("Exception thrown while initializing connection to Mongo DB: {}", e.getMessage());
+			logger.error("Exception thrown while initializing connection to Mongo DB: {} for writing.", e.getMessage());
 		}
 	}
 
@@ -99,7 +99,7 @@ public class MongoDBWriterImpl implements OutputWriter
 		if(batchCounter > 0)
 			writeBatch();
 
-		logger.info("Closing MongoDB connection to database {} and collection {} after writing {} documents", databaseName, collectionName, counter);
+		logger.info("Closing MongoDB connection to database {} and collection {} after writing a total of {} documents", databaseName, collectionName, counter);
 		client.close();
 	}
 }
