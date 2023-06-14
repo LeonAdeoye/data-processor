@@ -27,9 +27,9 @@ public class MongoDBWriterImpl implements OutputWriter
 	private String databaseName;
 	@Value("${mongodb.writer.connection.uri}")
 	private String connectionURI;
-	@Value("${check.json.validity:false}")
+	@Value("${check.json.validity:true}")
 	private boolean checkJsonValidity;
-	@Value("${mongodb.writer.batch.size:0}")
+	@Value("${mongodb.writer.batch.size:1}")
 	private int batchSize;
 
 	private List<Document> batch;

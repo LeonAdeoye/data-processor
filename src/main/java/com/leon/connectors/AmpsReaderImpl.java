@@ -56,7 +56,6 @@ public class AmpsReaderImpl implements InputReader
 	{
 		try
 		{
-			if(filter.isEmpty())
 			for(Message message : (filter.isEmpty()) ? amps.subscribe(topic) : amps.subscribe(topic, filter))
 			{
 				if(message.getData().equals(endIndicator))

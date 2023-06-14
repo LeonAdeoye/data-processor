@@ -48,7 +48,6 @@ public class AmpsWriterImpl implements OutputWriter
 	@Override
 	public void write(String output)
 	{
-		//OUTPUT STRING IS JSON: "{\"symbol\":\"ABCD\",\"price\":100.0,\"quantity\":1000}"
 		try
 		{
 			amps.publish(topic, output);
