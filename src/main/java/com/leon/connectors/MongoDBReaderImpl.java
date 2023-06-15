@@ -23,6 +23,8 @@ public class MongoDBReaderImpl implements InputReader
 	private String databaseName;
 	@Value("${mongodb.reader.connection.uri}")
 	private String connectionURI;
+	@Value("${mongodb.reader.find.filter}")
+	private String filter;
 
 	private MongoClient client;
 	private MongoDatabase database;
@@ -53,7 +55,7 @@ public class MongoDBReaderImpl implements InputReader
 		{
 			try
 			{
-				FindIterable<Document> documents = collection.find();
+				FindIterable<Document> documents = filter.isEmpty() ? collection.find() : collection.find(Document.parse(filter));
 				documents.forEach((Document document) ->
 				{
 					counter++;
