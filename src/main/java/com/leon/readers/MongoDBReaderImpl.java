@@ -1,4 +1,4 @@
-package com.leon.connectors;
+package com.leon.readers;
 
 import com.leon.disruptors.DisruptorPayload;
 import com.mongodb.client.*;

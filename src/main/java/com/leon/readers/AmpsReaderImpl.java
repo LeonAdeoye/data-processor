@@ -1,4 +1,4 @@
-package com.leon.connectors;
+package com.leon.readers;
 
 import com.crankuptheamps.client.Client;
 import com.crankuptheamps.client.Message;

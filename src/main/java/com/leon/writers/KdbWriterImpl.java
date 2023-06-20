@@ -1,4 +1,4 @@
-package com.leon.connectors;
+package com.leon.writers;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;

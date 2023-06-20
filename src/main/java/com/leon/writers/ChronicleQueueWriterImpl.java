@@ -1,4 +1,4 @@
-package com.leon.connectors;
+package com.leon.writers;
 
 import net.openhft.chronicle.queue.ChronicleQueue;
 import net.openhft.chronicle.queue.ExcerptAppender;

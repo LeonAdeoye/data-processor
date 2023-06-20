@@ -1,4 +1,4 @@
-package com.leon.connectors;
+package com.leon.writers;
 
 import com.leon.services.JsonValidator;
 import com.mongodb.client.MongoClient;

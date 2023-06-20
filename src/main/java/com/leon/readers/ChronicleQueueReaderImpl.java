@@ -1,4 +1,4 @@
-package com.leon.connectors;
+package com.leon.readers;
 
 import com.leon.disruptors.DisruptorPayload;
 import net.openhft.chronicle.queue.ChronicleQueue;
