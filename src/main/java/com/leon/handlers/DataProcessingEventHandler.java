@@ -28,6 +28,8 @@ public class DataProcessingEventHandler implements EventHandler<DisruptorEvent>
 	private void process(DisruptorEvent disruptorEvent)
 	{
 		logger.debug(disruptorEvent.getPayload().toString());
-		this.outboundDisruptor.push(disruptorEvent.getPayload());
+
+		if(disruptorEvent.getPayload().toString().contains("ticker"))
+			this.outboundDisruptor.push(disruptorEvent.getPayload());
 	}
 }
