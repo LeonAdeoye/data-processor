@@ -3,6 +3,7 @@ package com.leon.services;
 import com.leon.disruptors.DisruptorService;
 import com.leon.handlers.DataProcessingEventHandler;
 import com.leon.handlers.JournalEventHandler;
+import com.leon.handlers.KrakenPriceSubProcessor;
 import com.leon.handlers.OutputEventHandler;
 import com.leon.readers.InputReader;
 import com.leon.writers.OutputWriter;
@@ -41,6 +42,7 @@ public class OrchestrationServiceImpl implements OrchestrationService
 	{
 		logger.info("Starting bootstrapping process...");
 		dataProcessingEventHandler.setOutboundDisruptor(outboundDisruptor);
+		dataProcessingEventHandler.setSubProcessor(new KrakenPriceSubProcessor());
 		outboundDisruptor.start("OUTBOUND", new JournalEventHandler(), new OutputEventHandler(outputWriter));
 		inboundDisruptor.start("INBOUND", new JournalEventHandler(), dataProcessingEventHandler);
 

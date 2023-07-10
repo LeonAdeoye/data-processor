@@ -26,8 +26,8 @@ public class WebSocketReaderImpl extends TextWebSocketHandler implements InputRe
 	private String sourceUrl;
 	@Value("${input.reader.end.indicator}:")
 	private String endIndicator;
-	@Value("${websocket.reader.request.data}")
-	private String requestData;
+	@Value("${websocket.reader.subscribe.request}")
+	private String subscribeRequest;
 	private final WebSocketClient webSocketClient = new StandardWebSocketClient();
 	private final ReplayProcessor<DisruptorPayload> processor = ReplayProcessor.create();
 	private final FluxSink<DisruptorPayload> sink = processor.sink();
@@ -50,7 +50,7 @@ public class WebSocketReaderImpl extends TextWebSocketHandler implements InputRe
 	public void afterConnectionEstablished(WebSocketSession session) throws Exception
 	{
 		logger.info("Successfully connected to WebSocket source.");
-		session.sendMessage(new TextMessage(requestData));
+		session.sendMessage(new TextMessage(subscribeRequest));
 	}
 
 	@Override
