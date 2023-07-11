@@ -52,12 +52,12 @@ public class DataProcessingEventHandler implements EventHandler<DisruptorEvent>
 	private void process(DisruptorEvent disruptorEvent)
 	{
 		String payload = disruptorEvent.getPayload().getPayload().toString();
-		logger.trace("Before filtering, received this: {}", payload);
+		logger.trace("Before filtering, received this payload: {}", payload);
 
 		if(filterOut(payload))
 			return;
 
-		logger.debug("After filtering will process this: {}", payload);
+		logger.debug("After filtering will process this payload: {}", payload);
 		String result = subProcessor.process(payload);
 		this.outboundDisruptor.push(new DisruptorPayload(result));
 	}

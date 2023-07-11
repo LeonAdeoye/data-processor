@@ -69,6 +69,9 @@ public class WebSocketReaderImpl extends TextWebSocketHandler implements InputRe
 	@Override
 	public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception
 	{
+		if(endIndicator.isEmpty())
+			sink.complete();
+
 		logger.info("Connection closed: " + status.getReason());
 	}
 

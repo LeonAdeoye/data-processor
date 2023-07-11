@@ -94,6 +94,6 @@ public class KrakenPriceSubProcessor implements SubProcessor
 			logger.error(e.getMessage());
 		}
 
-		return "{}";
+		return "{\"type\": \"price\", \"source\": \"kraken.com\"}";
 	}
 }
