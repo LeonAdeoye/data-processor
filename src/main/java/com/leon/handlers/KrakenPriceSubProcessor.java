@@ -83,10 +83,11 @@ public class KrakenPriceSubProcessor implements SubProcessor
 			if(jsonPayload.has(3))
 			{
 				JsonNode symbol = jsonPayload.get(3);
-				builder.append(", \"symbol\": \"").append(symbol.asText()).append("\"");
+				builder.append(", \"symbol\": \"").append(symbol.asText()).append("\"}");
 			}
+			else
+				return "{\"type\": \"error\", \"source\": \"kraken.com\"}";
 
-			builder.append(", \"timestamp\": ").append(System.currentTimeMillis()).append("}");
 			return builder.toString();
 		}
 		catch (JsonProcessingException e)
@@ -94,6 +95,6 @@ public class KrakenPriceSubProcessor implements SubProcessor
 			logger.error(e.getMessage());
 		}
 
-		return "{\"type\": \"price\", \"source\": \"kraken.com\"}";
+		return "{\"type\": \"error\", \"source\": \"kraken.com\"}";
 	}
 }

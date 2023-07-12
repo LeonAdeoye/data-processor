@@ -53,7 +53,7 @@ public class DataProcessingEventHandler implements EventHandler<DisruptorEvent>
 		String payload = disruptorEvent.getPayload().getPayload().toString();
 		logger.trace("Before filtering, received this payload: {}", payload);
 
-		if(filterOut(payload))
+		if(notApplicable(payload))
 			return;
 
 		logger.debug("After filtering will process this payload: {}", payload);
@@ -61,7 +61,7 @@ public class DataProcessingEventHandler implements EventHandler<DisruptorEvent>
 		this.outboundDisruptor.push(new DisruptorPayload(result));
 	}
 
-	private boolean filterOut(String payload)
+	private boolean notApplicable(String payload)
 	{
 		boolean result;
 		if(excludeFilter != null && !excludeFilter.isEmpty() && payload.contains(excludeFilter))
@@ -73,5 +73,4 @@ public class DataProcessingEventHandler implements EventHandler<DisruptorEvent>
 
 		return result;
 	}
-
 }
