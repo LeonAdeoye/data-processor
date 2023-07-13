@@ -21,7 +21,7 @@ import javax.annotation.PostConstruct;
 @ConditionalOnProperty(value="websocket.input.reader", havingValue = "true")
 public class WebSocketReaderImpl extends TextWebSocketHandler implements InputReader
 {
-	Logger logger = LoggerFactory.getLogger(WebSocketReaderImpl.class);
+	private static final Logger logger = LoggerFactory.getLogger(WebSocketReaderImpl.class);
 	@Value("${websocket.reader.source.url}")
 	private String sourceUrl;
 	@Value("${input.reader.end.indicator}:")

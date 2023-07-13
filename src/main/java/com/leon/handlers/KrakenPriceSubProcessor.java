@@ -7,10 +7,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import java.text.DecimalFormat;
+
 @Component
 public class KrakenPriceSubProcessor implements SubProcessor
 {
-	Logger logger = LoggerFactory.getLogger(KrakenPriceSubProcessor.class);
+	private static final Logger logger = LoggerFactory.getLogger(KrakenPriceSubProcessor.class);
+	private static final DecimalFormat decimalFormat = new DecimalFormat("0.00");
+
+	private static final String erroneousResponse = "{\"type\": \"error\", \"source\": \"kraken.com\"}";
 
 	@Override
 	public String process(String payload)
@@ -19,58 +24,61 @@ public class KrakenPriceSubProcessor implements SubProcessor
 		{
 			ObjectMapper objectMapper = new ObjectMapper();
 			JsonNode jsonPayload = objectMapper.readTree(payload);
+
+			if(!jsonPayload.has(1))
+				return erroneousResponse;
+
 			JsonNode prices = jsonPayload.get(1);
 			StringBuilder builder = new StringBuilder("{\"type\": \"price\", \"source\": \"kraken.com\"");
 
 			if(prices.has("a"))
 			{
 				JsonNode askArray = prices.get("a");
-				builder.append(", \"best_ask\": ").append(askArray.get(0).asDouble());
-
+				builder.append(", \"best_ask\": ").append(decimalFormat.format(askArray.get(0).asDouble()));
 			}
 
 			if(prices.has("b"))
 			{
 				JsonNode bidArray = prices.get("b");
-				builder.append(", \"best_bid\": ").append(bidArray.get(0).asDouble());
+				builder.append(", \"best_bid\": ").append(decimalFormat.format(bidArray.get(0).asDouble()));
 			}
 
 			if(prices.has("c"))
 			{
 				JsonNode closeArray = prices.get("c");
-				builder.append(", \"close\": ").append(closeArray.get(0).asDouble());
+				builder.append(", \"close\": ").append(decimalFormat.format(closeArray.get(0).asDouble()));
 			}
 
 			if(prices.has("h"))
 			{
 				JsonNode highArray = prices.get("h");
-				builder.append(", \"high\": ").append(highArray.get(0).asDouble());
+				builder.append(", \"high\": ").append(decimalFormat.format(highArray.get(0).asDouble()));
 			}
 
 			if(prices.has("l"))
 			{
 				JsonNode lowArray = prices.get("l");
-				builder.append(", \"low\": ").append(lowArray.get(0).asDouble());
+				builder.append(", \"low\": ").append(decimalFormat.format(lowArray.get(0).asDouble()));
 			}
 
 			if(prices.has("o"))
 			{
 				JsonNode openArray = prices.get("o");
-				builder.append(", \"open\": ").append(openArray.get(0).asDouble());
+				builder.append(", \"open\": ").append(decimalFormat.format(openArray.get(0).asDouble()));
 			}
 
 			if(prices.has("v"))
 			{
 				JsonNode volumeArray = prices.get("v");
-				builder.append(", \"vol_today\": ").append(volumeArray.get(0).asDouble());
-				builder.append(", \"vol_24h\": ").append(volumeArray.get(1).asDouble());
+				builder.append(", \"vol_today\": ").append(decimalFormat.format(volumeArray.get(0).asDouble()));
+				builder.append(", \"vol_24h\": ").append(decimalFormat.format(volumeArray.get(1).asDouble()));
 			}
 
 			if(prices.has("p"))
 			{
 				JsonNode volumeWeightedAveragePriceArray = prices.get("p");
-				builder.append(", \"vwap_today\": ").append(volumeWeightedAveragePriceArray.get(0).asDouble());
-				builder.append(", \"vwap_24h\": ").append(volumeWeightedAveragePriceArray.get(1).asDouble());
+				builder.append(", \"vwap_today\": ").append(decimalFormat.format(volumeWeightedAveragePriceArray.get(0).asDouble()));
+				builder.append(", \"vwap_24h\": ").append(decimalFormat.format(volumeWeightedAveragePriceArray.get(1).asDouble()));
 			}
 
 			if(prices.has("t"))
@@ -86,7 +94,7 @@ public class KrakenPriceSubProcessor implements SubProcessor
 				builder.append(", \"symbol\": \"").append(symbol.asText()).append("\"}");
 			}
 			else
-				return "{\"type\": \"error\", \"source\": \"kraken.com\"}";
+				return erroneousResponse;
 
 			return builder.toString();
 		}
@@ -95,6 +103,6 @@ public class KrakenPriceSubProcessor implements SubProcessor
 			logger.error(e.getMessage());
 		}
 
-		return "{\"type\": \"error\", \"source\": \"kraken.com\"}";
+		return erroneousResponse;
 	}
 }
