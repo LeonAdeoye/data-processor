@@ -1,7 +1,6 @@
 package com.leon.handlers;
 
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 class KrakenPriceSubProcessorTest {
@@ -18,8 +17,6 @@ class KrakenPriceSubProcessorTest {
 		// Assert
 		Assertions.assertEquals("{\"type\": \"price\", \"source\": \"kraken.com\", \"best_ask\": 31151.70, \"best_bid\": 31151.60, \"close\": 31151.70, \"high\": 31634.20, \"low\": 31100.00, \"open\": 31486.10, \"vol_today\": 953.35, \"vol_24h\": 4877.34, \"vwap_today\": 31351.04, \"vwap_24h\": 31214.63, \"num_trades\": 13636, \"num_trades_24h\": 50519, \"symbol\": \"XBT/USD\"}", result);
 	}
-
-
 
 	@Test
 	void process_shouldReturnErrorObjectForMissingPrices() {
