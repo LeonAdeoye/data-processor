@@ -14,12 +14,12 @@ import javax.annotation.PostConstruct;
 public class DataProcessingEventHandler implements EventHandler<DisruptorEvent>
 {
 	private static final Logger logger = LoggerFactory.getLogger(DataProcessingEventHandler.class);
-
 	@Value("${input.reader.include.filter}")
 	private String includeFilter;
-
 	@Value("${input.reader.exclude.filter}")
 	private String excludeFilter;
+	private SubProcessor subProcessor;
+	private DisruptorService outboundDisruptor;
 
 	@PostConstruct
 	public void initialize()
@@ -27,10 +27,6 @@ public class DataProcessingEventHandler implements EventHandler<DisruptorEvent>
 		logger.info("DataProcessingEventHandler Include filter: {}", includeFilter);
 		logger.info("DataProcessingEventHandler Exclude filter: {}", excludeFilter);
 	}
-
-	private SubProcessor subProcessor;
-
-	private DisruptorService outboundDisruptor;
 
 	public void setOutboundDisruptor(DisruptorService outboundDisruptor)
 	{
@@ -40,25 +36,6 @@ public class DataProcessingEventHandler implements EventHandler<DisruptorEvent>
 	public void setSubProcessor(SubProcessor subProcessor)
 	{
 		this.subProcessor = subProcessor;
-	}
-
-	@Override
-	public void onEvent(DisruptorEvent disruptorEvent, long sequence, boolean endOfBatch)
-	{
-		process(disruptorEvent);
-	}
-
-	private void process(DisruptorEvent disruptorEvent)
-	{
-		String payload = disruptorEvent.getPayload().getPayload().toString();
-		logger.trace("Before filtering, received this payload: {}", payload);
-
-		if(notApplicable(payload))
-			return;
-
-		logger.debug("After filtering will process this payload: {}", payload);
-		String result = subProcessor.process(payload);
-		this.outboundDisruptor.push(new DisruptorPayload(result));
 	}
 
 	private boolean notApplicable(String payload)
@@ -72,5 +49,25 @@ public class DataProcessingEventHandler implements EventHandler<DisruptorEvent>
 			result = false;
 
 		return result;
+	}
+
+	private void process(DisruptorEvent disruptorEvent)
+	{
+		String payload = disruptorEvent.getPayload().getPayload().toString();
+		logger.trace("Received this payload: {}", payload);
+
+		if(outboundDisruptor == null || notApplicable(payload))
+			return;
+
+		if(subProcessor != null)
+			outboundDisruptor.push(new DisruptorPayload(subProcessor.process(payload)));
+		else
+			outboundDisruptor.push(new DisruptorPayload(payload));
+	}
+
+	@Override
+	public void onEvent(DisruptorEvent disruptorEvent, long sequence, boolean endOfBatch)
+	{
+		process(disruptorEvent);
 	}
 }

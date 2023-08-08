@@ -6,15 +6,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-
 import java.text.DecimalFormat;
 
 @Component
-public class KrakenPriceSubProcessor implements SubProcessor
+public class KrakenPriceSubProcessorImpl implements SubProcessor
 {
-	private static final Logger logger = LoggerFactory.getLogger(KrakenPriceSubProcessor.class);
+	private static final Logger logger = LoggerFactory.getLogger(KrakenPriceSubProcessorImpl.class);
 	private static final DecimalFormat decimalFormat = new DecimalFormat("0.00");
-
 	private static final String erroneousResponse = "{\"type\": \"error\", \"source\": \"kraken.com\"}";
 
 	@Override

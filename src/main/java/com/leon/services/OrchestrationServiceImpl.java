@@ -1,10 +1,7 @@
 package com.leon.services;
 
 import com.leon.disruptors.DisruptorService;
-import com.leon.handlers.DataProcessingEventHandler;
-import com.leon.handlers.JournalEventHandler;
-import com.leon.handlers.KrakenPriceSubProcessor;
-import com.leon.handlers.OutputEventHandler;
+import com.leon.handlers.*;
 import com.leon.readers.InputReader;
 import com.leon.writers.OutputWriter;
 import org.slf4j.Logger;
@@ -20,7 +17,6 @@ import static java.lang.Thread.sleep;
 public class OrchestrationServiceImpl implements OrchestrationService
 {
 	private static final Logger logger = LoggerFactory.getLogger(OrchestrationServiceImpl.class);
-
 	@Autowired
 	private DisruptorService inboundDisruptor;
 	@Autowired
@@ -32,8 +28,9 @@ public class OrchestrationServiceImpl implements OrchestrationService
 	@Autowired
 	private DataProcessingEventHandler dataProcessingEventHandler;
 	@Autowired
-	ApplicationContext applicationContext;
-
+	private ApplicationContext applicationContext;
+	@Autowired
+	private SubProcessor subProcessor;
 	@Value("${shutdown.sleep.duration}")
 	private long shutdownSleepDuration;
 
@@ -42,7 +39,7 @@ public class OrchestrationServiceImpl implements OrchestrationService
 	{
 		logger.info("Starting bootstrapping process...");
 		dataProcessingEventHandler.setOutboundDisruptor(outboundDisruptor);
-		dataProcessingEventHandler.setSubProcessor(new KrakenPriceSubProcessor());
+		dataProcessingEventHandler.setSubProcessor(subProcessor);
 		outboundDisruptor.start("OUTBOUND", new JournalEventHandler(), new OutputEventHandler(outputWriter));
 		inboundDisruptor.start("INBOUND", new JournalEventHandler(), dataProcessingEventHandler);
 
