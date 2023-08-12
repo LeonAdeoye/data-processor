@@ -89,7 +89,8 @@ public class KrakenPriceSubProcessorImpl implements SubProcessor
 			if(jsonPayload.has(3))
 			{
 				JsonNode symbol = jsonPayload.get(3);
-				builder.append(", \"symbol\": \"").append(symbol.asText()).append("\"}");
+				builder.append(", \"symbol\": \"").append(symbol.asText()).append("\"");
+				builder.append(", \"timestamp\": ").append(System.currentTimeMillis()).append("}");
 			}
 			else
 				return erroneousResponse;
