@@ -27,7 +27,7 @@ public class KrakenPriceSubProcessorImpl implements SubProcessor
 				return erroneousResponse;
 
 			JsonNode prices = jsonPayload.get(1);
-			StringBuilder builder = new StringBuilder("{\"type\": \"price\", \"source\": \"kraken.com\"");
+			StringBuilder builder = new StringBuilder("{\"type\": \"price\", \"source\": \"kraken.com\", \"time_stamp\": ").append(System.currentTimeMillis());
 
 			if(prices.has("a"))
 			{
@@ -89,8 +89,7 @@ public class KrakenPriceSubProcessorImpl implements SubProcessor
 			if(jsonPayload.has(3))
 			{
 				JsonNode symbol = jsonPayload.get(3);
-				builder.append(", \"symbol\": \"").append(symbol.asText()).append("\"");
-				builder.append(", \"timestamp\": ").append(System.currentTimeMillis()).append("}");
+				builder.append(", \"symbol\": \"").append(symbol.asText()).append("\"}");
 			}
 			else
 				return erroneousResponse;
