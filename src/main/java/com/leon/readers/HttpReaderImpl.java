@@ -25,10 +25,10 @@ public class HttpReaderImpl implements InputReader
 	private static final Logger logger = LoggerFactory.getLogger(HttpReaderImpl.class);
 	@Value("${input.reader.http.url}")
 	private String url = "";
-	@Value("${input.reader.http.frequency:300000}")
-	private long frequencyInMilliseconds;
-	@Value("${input.reader.http.field:rates}")
-	private String fieldToExtract;
+	@Value("${input.reader.http.interval:300000}")
+	private long intervalInMilliseconds;
+	@Value("${input.reader.http.root.node}")
+	private String rootNodeProperty = "";
 	@Value("${input.reader.http.method:GET}")
 	private String httpMethod;
 	private HttpURLConnection connection;
@@ -42,7 +42,8 @@ public class HttpReaderImpl implements InputReader
 		dataFlux.subscribe(payload -> dataSink.next(payload));
 	}
 
-	public Flux<DisruptorPayload> readData() {
+	public Flux<DisruptorPayload> readData()
+	{
 		return Flux.create(emitter ->
 		{
 			try
@@ -63,13 +64,11 @@ public class HttpReaderImpl implements InputReader
 
 					ObjectMapper objectMapper = new ObjectMapper();
 					JsonNode rootNode = objectMapper.readTree(jsonContent.toString());
-					String rates = rootNode.get(this.fieldToExtract).toString();
-
-					emitter.next(new DisruptorPayload(rates));
+					String dataToProcess = rootNode.get(this.rootNodeProperty).toString();
+					emitter.next(new DisruptorPayload(dataToProcess));
 				}
 
 				connection.disconnect();
-
 			}
 			catch (IOException ioe)
 			{
