@@ -25,8 +25,6 @@ public class HttpReaderImpl implements InputReader
 	private static final Logger logger = LoggerFactory.getLogger(HttpReaderImpl.class);
 	@Value("${input.reader.http.url}")
 	private String url = "";
-	@Value("${input.reader.http.interval:300000}")
-	private long intervalInMilliseconds;
 	@Value("${input.reader.http.root.node}")
 	private String rootNodeProperty = "";
 	@Value("${input.reader.http.method:GET}")
@@ -35,7 +33,7 @@ public class HttpReaderImpl implements InputReader
 	private final DirectProcessor<DisruptorPayload> dataProcessor = DirectProcessor.create();
 	private final FluxSink<DisruptorPayload> dataSink = dataProcessor.sink();
 
-	@Scheduled(fixedDelayString = "${input.reader.http.frequency}")
+	@Scheduled(fixedDelayString = "${input.reader.http.interval}")
 	public void fetchAndProcessData()
 	{
 		Flux<DisruptorPayload> dataFlux = readData();
