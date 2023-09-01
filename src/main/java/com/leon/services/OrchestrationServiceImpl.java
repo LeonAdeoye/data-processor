@@ -28,6 +28,8 @@ public class OrchestrationServiceImpl implements OrchestrationService
 	@Autowired
 	private DataProcessingEventHandler dataProcessingEventHandler;
 	@Autowired
+	private LoggingOnlyDataProcessor loggingOnlyDataProcessor;
+	@Autowired
 	private ApplicationContext applicationContext;
 	@Autowired
 	private SubProcessor subProcessor;
@@ -40,8 +42,10 @@ public class OrchestrationServiceImpl implements OrchestrationService
 		logger.info("Starting bootstrapping process...");
 		dataProcessingEventHandler.setOutboundDisruptor(outboundDisruptor);
 		dataProcessingEventHandler.setSubProcessor(subProcessor);
+		// inboundDisruptor.start("INBOUND", new JournalEventHandler(), dataProcessingEventHandler);
+		loggingOnlyDataProcessor.setOutboundDisruptor(outboundDisruptor);
+		inboundDisruptor.start("INBOUND", new JournalEventHandler(), loggingOnlyDataProcessor);
 		outboundDisruptor.start("OUTBOUND", new JournalEventHandler(), new OutputEventHandler(outputWriter));
-		inboundDisruptor.start("INBOUND", new JournalEventHandler(), dataProcessingEventHandler);
 
 		inputReader.read().subscribe(
 			inboundDisruptor::push,
