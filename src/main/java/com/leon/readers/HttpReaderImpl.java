@@ -62,7 +62,8 @@ public class HttpReaderImpl implements InputReader
 
 					ObjectMapper objectMapper = new ObjectMapper();
 					JsonNode rootNode = objectMapper.readTree(jsonContent.toString());
-					String dataToProcess = rootNode.get(this.rootNodeProperty).toString();
+					JsonNode nodeToExtract = rootNode.get(this.rootNodeProperty);
+					String dataToProcess = nodeToExtract.toString();
 					emitter.next(new DisruptorPayload(dataToProcess));
 				}
 

@@ -1,10 +1,11 @@
 package com.leon.handlers;
 
+import com.leon.processor.KrakenPriceProcessorImpl;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 class KrakenPriceSubProcessorTest {
-	private KrakenPriceSubProcessorImpl krakenPriceSubProcessorImpl = new KrakenPriceSubProcessorImpl();
+	private KrakenPriceProcessorImpl krakenPriceSubProcessorImpl = new KrakenPriceProcessorImpl();
 
 	@Test
 	void process_shouldReturnPriceObjectForValidPayload() {

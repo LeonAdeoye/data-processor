@@ -1,23 +1,38 @@
-package com.leon.handlers;
+package com.leon.processor;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 import java.text.DecimalFormat;
 
 @Component
-public class KrakenPriceSubProcessorImpl implements SubProcessor
+@ConditionalOnProperty(value="kraken.price.processing", matchIfMissing = false)
+public class KrakenPriceProcessorImpl implements Processor
 {
-	private static final Logger logger = LoggerFactory.getLogger(KrakenPriceSubProcessorImpl.class);
+	private static final Logger logger = LoggerFactory.getLogger(KrakenPriceProcessorImpl.class);
 	private static final DecimalFormat decimalFormat = new DecimalFormat("0.00");
 	private static final String erroneousResponse = "{\"type\": \"error\", \"source\": \"kraken.com\"}";
+
+	@Value("${kraken.price.processing}")
+	private int order;
+
+	@Override
+	public int getOrder()
+	{
+		return this.order;
+	}
 
 	@Override
 	public String process(String payload)
 	{
+		if(payload.isEmpty())
+			return "";
+
 		try
 		{
 			ObjectMapper objectMapper = new ObjectMapper();
@@ -27,7 +42,7 @@ public class KrakenPriceSubProcessorImpl implements SubProcessor
 				return erroneousResponse;
 
 			JsonNode prices = jsonPayload.get(1);
-			StringBuilder builder = new StringBuilder("{\"type\": \"price\", \"source\": \"kraken.com\", \"time_stamp\": ").append(System.currentTimeMillis());
+			StringBuilder builder = new StringBuilder("{\"type\": \"price\", \"source\": \"kraken.com\"");
 
 			if(prices.has("a"))
 			{
