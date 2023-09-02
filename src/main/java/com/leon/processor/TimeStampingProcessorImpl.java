@@ -21,12 +21,12 @@ public class TimeStampingProcessorImpl implements Processor
 	private String timeStampFieldName;
 
 	@Value("${timestamp.processing}")
-	private int order;
+	private int processingOrder;
 
 	@Override
-	public int getOrder()
+	public int getProcessingOrder()
 	{
-		return this.order;
+		return this.processingOrder;
 	}
 	@Override
 	public String process(String payload)

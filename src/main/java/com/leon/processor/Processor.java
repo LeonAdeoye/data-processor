@@ -4,5 +4,5 @@ public interface Processor
 {
 	String process(String payload);
 
-	int getOrder();
+	int getProcessingOrder();
 }

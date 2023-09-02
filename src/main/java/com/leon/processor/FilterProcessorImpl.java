@@ -14,11 +14,11 @@ public class FilterProcessorImpl implements Processor
 	private String excludeFilter;
 
 	@Value("${filter.processing:Integer.MAX_VALUE}")
-	private int order;
+	private int processingOrder;
 	@Override
-	public int getOrder()
+	public int getProcessingOrder()
 	{
-		return this.order;
+		return this.processingOrder;
 	}
 
 	@Override

@@ -19,12 +19,12 @@ public class KrakenPriceProcessorImpl implements Processor
 	private static final String erroneousResponse = "{\"type\": \"error\", \"source\": \"kraken.com\"}";
 
 	@Value("${kraken.price.processing}")
-	private int order;
+	private int processingOrder;
 
 	@Override
-	public int getOrder()
+	public int getProcessingOrder()
 	{
-		return this.order;
+		return this.processingOrder;
 	}
 
 	@Override

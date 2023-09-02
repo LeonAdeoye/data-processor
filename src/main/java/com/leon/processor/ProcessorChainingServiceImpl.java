@@ -18,7 +18,7 @@ public class ProcessorChainingServiceImpl implements ProcessorChainingService
 	{
 		this.processors = processors;
 
-		processors.sort(Comparator.comparingInt(Processor::getOrder));
+		processors.sort(Comparator.comparingInt(Processor::getProcessingOrder));
 
 		for (int order = 0; order < processors.size(); order++)
 		{
