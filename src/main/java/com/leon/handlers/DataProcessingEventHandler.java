@@ -6,9 +6,9 @@ import com.leon.disruptors.DisruptorService;
 import com.leon.processor.ProcessorChainingService;
 import com.lmax.disruptor.EventHandler;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
-@Service
+@Component
 public class DataProcessingEventHandler implements EventHandler<DisruptorEvent>
 {
 	private final ProcessorChainingService processorChainingService;

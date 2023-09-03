@@ -1,9 +1,11 @@
 package com.leon.services;
 
+import com.leon.disruptors.DisruptorEvent;
 import com.leon.disruptors.DisruptorService;
 import com.leon.handlers.*;
 import com.leon.readers.InputReader;
 import com.leon.writers.OutputWriter;
+import com.lmax.disruptor.EventHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +30,10 @@ public class OrchestrationServiceImpl implements OrchestrationService
 	@Autowired
 	private DataProcessingEventHandler dataProcessingEventHandler;
 	@Autowired
+	OutputEventHandler outputEventHandler;
+	@Autowired
 	private ApplicationContext applicationContext;
+
 	@Value("${shutdown.sleep.duration}")
 	private long shutdownSleepDuration;
 
@@ -38,7 +43,7 @@ public class OrchestrationServiceImpl implements OrchestrationService
 		logger.info("Starting bootstrapping process...");
 		dataProcessingEventHandler.setOutboundDisruptor(outboundDisruptor);
 		inboundDisruptor.start("INBOUND", new JournalEventHandler(), dataProcessingEventHandler);
-		outboundDisruptor.start("OUTBOUND", new JournalEventHandler(), new OutputEventHandler(outputWriter));
+		outboundDisruptor.start("OUTBOUND", new JournalEventHandler(), outputEventHandler);
 
 		inputReader.read().subscribe(
 			inboundDisruptor::push,
