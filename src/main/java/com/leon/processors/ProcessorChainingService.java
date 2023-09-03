@@ -1,4 +1,4 @@
-package com.leon.processor;
+package com.leon.processors;
 
 public interface ProcessorChainingService
 {

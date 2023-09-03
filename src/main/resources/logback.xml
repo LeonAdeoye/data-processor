@@ -55,7 +55,7 @@
     <logger name="com.leon.disruptors" level="DEBUG" />
     <logger name="com.leon.readers" level="INFO" />
     <logger name="com.leon.writers" level="INFO" />
-    <logger name="com.leon.processor" level="INFO" />
+    <logger name="com.leon.processors" level="INFO" />
     <logger name="com.leon.handlers" level="INFO" />
     <logger name="com.leon.handlers.OutboundJournalEventHandler" level="INFO">
         <appender-ref ref="ASYNC_OUTBOUND_JOURNAL_FILE"/>

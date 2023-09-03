@@ -3,7 +3,7 @@ package com.leon.handlers;
 import com.leon.disruptors.DisruptorEvent;
 import com.leon.disruptors.DisruptorPayload;
 import com.leon.disruptors.DisruptorService;
-import com.leon.processor.ProcessorChainingService;
+import com.leon.processors.ProcessorChainingService;
 import com.lmax.disruptor.EventHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

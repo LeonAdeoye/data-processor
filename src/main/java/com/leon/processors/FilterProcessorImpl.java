@@ -1,4 +1,4 @@
-package com.leon.processor;
+package com.leon.processors;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
