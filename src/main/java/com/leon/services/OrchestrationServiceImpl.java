@@ -1,11 +1,9 @@
 package com.leon.services;
 
-import com.leon.disruptors.DisruptorEvent;
 import com.leon.disruptors.DisruptorService;
 import com.leon.handlers.*;
 import com.leon.readers.InputReader;
 import com.leon.writers.OutputWriter;
-import com.lmax.disruptor.EventHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
