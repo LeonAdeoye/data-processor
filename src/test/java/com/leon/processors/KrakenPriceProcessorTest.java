@@ -2,7 +2,9 @@ package com.leon.processors;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
 
+@SpringBootTest
 class KrakenPriceProcessorTest
 {
 	private KrakenPriceProcessorImpl processor = new KrakenPriceProcessorImpl();

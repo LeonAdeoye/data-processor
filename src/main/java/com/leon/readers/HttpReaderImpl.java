@@ -1,7 +1,5 @@
 package com.leon.readers;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.leon.disruptors.DisruptorPayload;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,8 +23,6 @@ public class HttpReaderImpl implements InputReader
 	private static final Logger logger = LoggerFactory.getLogger(HttpReaderImpl.class);
 	@Value("${input.reader.http.url}")
 	private String url = "";
-	@Value("${input.reader.http.root.node}")
-	private String rootNodeProperty = "";
 	@Value("${input.reader.http.method:GET}")
 	private String httpMethod;
 	private HttpURLConnection connection;
@@ -48,7 +44,7 @@ public class HttpReaderImpl implements InputReader
 			{
 				URL url = new URL(this.url);
 				HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-				connection.setRequestMethod(httpMethod);
+				connection.setRequestMethod(this.httpMethod);
 
 				try (BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream())))
 				{
@@ -60,11 +56,7 @@ public class HttpReaderImpl implements InputReader
 						jsonContent.append(line);
 					}
 
-					ObjectMapper objectMapper = new ObjectMapper();
-					JsonNode rootNode = objectMapper.readTree(jsonContent.toString());
-					JsonNode nodeToExtract = rootNode.get(this.rootNodeProperty);
-					String dataToProcess = nodeToExtract.toString();
-					emitter.next(new DisruptorPayload(dataToProcess));
+					emitter.next(new DisruptorPayload(jsonContent.toString()));
 				}
 
 				connection.disconnect();
