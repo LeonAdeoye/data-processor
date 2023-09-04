@@ -89,7 +89,8 @@ public class DisruptorServiceImpl implements DisruptorService
 		{
 			hasStarted = false;
 			Instant end = Instant.now();
-			logger.info("{} events were processed by {} disruptor. Time taken approximately {} ms.", counter, name, Duration.between(start, end).toMillis() - shutdownSleepDuration);
+			logger.info("start:{} end:{}", start, end);
+			//logger.info("{} events were processed by {} disruptor. Time taken approximately {} ms.", counter, name, Duration.between(start, end).toMillis() - shutdownSleepDuration);
 			disruptor.halt();
 			logger.info("Halted {} disruptor", name);
 			disruptor.shutdown();

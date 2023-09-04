@@ -5,25 +5,28 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.stereotype.Component;
-import javax.annotation.PostConstruct;
+import java.util.List;
 
 @Component
-@ConditionalOnProperty(value="JSONField.processing", matchIfMissing = false)
-public class JSONFieldExtractProcessorImpl implements Processor
+@ConditionalOnProperty(value="JSONToDelimitedString.processing", matchIfMissing = false)
+public class JSONToDelimitedStringProcessorImpl implements Processor
 {
-	private static final Logger logger = LoggerFactory.getLogger(JSONFieldExtractProcessorImpl.class);
-
-	@Value("${JSONField.processing}")
+	private static final Logger logger = LoggerFactory.getLogger(JSONToDelimitedStringProcessorImpl.class);
+	private ArrayList<String> listOfPropertiesToExtract;
+	@Value("${JSONToDelimitedString.processing}")
 	private int processingOrder;
 	@Value("${processor.fieldListToExtract}")
 	private String fieldListToExtract;
 
-	private ArrayList<String> listOfPropertiesToExtract;
+	@Value("${processor.delimiter}")
+	private String delimiter;
 
 	@PostConstruct
 	public void getListOfPropertiesToExtract()
@@ -39,29 +42,28 @@ public class JSONFieldExtractProcessorImpl implements Processor
 			return "";
 
 		ObjectMapper objectMapper = new ObjectMapper();
-		ObjectMapper resultMapper = new ObjectMapper();
 
 		try
 		{
-			JsonNode rootNode = objectMapper.readTree(payload);
-			JsonNode resultNode = resultMapper.createObjectNode();
+			JsonNode jsonNode = objectMapper.readTree(payload);
+			List<String> extractedValues = new ArrayList<>();
 
 			for (String property : listOfPropertiesToExtract)
 			{
-				if (rootNode.has(property))
+				if(jsonNode.has(property))
 				{
-					JsonNode extractedNode = rootNode.get(property);
-					((com.fasterxml.jackson.databind.node.ObjectNode) resultNode).set(property, extractedNode);
+					JsonNode propertyNode = jsonNode.get(property);
+					extractedValues.add(propertyNode.asText());
 				}
 				else
-					logger.warn("Property: {} not found in JSON: {}", property, rootNode);
+					extractedValues.add("");
 			}
 
-			return resultNode.size() > 0 ? resultNode.toString() : "";
+			return String.join(delimiter, extractedValues);
 		}
-		catch (IOException ioe)
+		catch (IOException e)
 		{
-			logger.error("Error processing JSON: {}", ioe.getMessage());
+			logger.error("Error processing JSON payload: " + e.getMessage());
 		}
 
 		return payload;
