@@ -13,12 +13,12 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 
 @Component
-@ConditionalOnProperty(value="JSONField.processing", matchIfMissing = false)
+@ConditionalOnProperty(value="JSONFieldExtraction.processing", matchIfMissing = false)
 public class JSONFieldExtractProcessorImpl implements Processor
 {
 	private static final Logger logger = LoggerFactory.getLogger(JSONFieldExtractProcessorImpl.class);
 
-	@Value("${JSONField.processing}")
+	@Value("${JSONFieldExtraction.processing}")
 	private int processingOrder;
 	@Value("${processor.fieldListToExtract}")
 	private String fieldListToExtract;

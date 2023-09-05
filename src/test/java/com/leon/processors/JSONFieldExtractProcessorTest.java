@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
 @TestPropertySource(properties = {
-		"JSONField.processing=0",
+		"JSONFieldExtraction.processing=0",
 		"processor.fieldListToExtract=field1,field2",
 })
 public class JSONFieldExtractProcessorTest
