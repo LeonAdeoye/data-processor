@@ -15,7 +15,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 import java.io.IOException;
-import java.text.DecimalFormat;
 
 @Component
 @ConditionalOnProperty(value="open.exchange.rates.processing", matchIfMissing = false)
@@ -45,7 +44,6 @@ public class FxRatesProcessingEventHandler implements EventHandler<DisruptorEven
 					ObjectNode currencyNode = objectMapper.createObjectNode();
 					currencyNode.put("currency", entry.getKey());
 					currencyNode.put("rate", entry.getValue().asDouble());
-					currencyNode.put("type", "fx-rate");
 					currencyNode.put("source", "openexchangerates.org");
 					outboundDisruptor.push(new DisruptorPayload(currencyNode.toString()));
 				});
