@@ -22,7 +22,6 @@ import java.text.DecimalFormat;
 public class FxRatesProcessingEventHandler implements EventHandler<DisruptorEvent>
 {
 	private static final Logger logger = LoggerFactory.getLogger(FxRatesProcessingEventHandler.class);
-	private static final DecimalFormat decimalFormat = new DecimalFormat("0.000");
 	private DisruptorService outboundDisruptor;
 
 	public void setOutboundDisruptor(DisruptorService outboundDisruptor)
