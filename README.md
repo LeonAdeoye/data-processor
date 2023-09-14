@@ -3,7 +3,7 @@
 This Java Spring Boot project processes input data from a configured inbound channel and generates output data into an outbound channel after configured pipeline processing.
 
 **Technologies Involved:**
-+ Spring boot.
++ Spring Boot.
 + Garbage collection telemetry.
 + Inbound and outbound disruptors.
 + Flux Reactive streams.
@@ -16,14 +16,14 @@ This Java Spring Boot project processes input data from a configured inbound cha
 + Active MQ read/write.
 + File read/write.
 + KDB read/write.
-+ HTTP read
++ HTTP read.
 + Unit testing and Mockito.
 
 **To-Dos:** 
-* Protobuf
-* Kafka
-* Automated validation
-* Runtime configuration
+* Protobuf.
+* Kafka.
+* Automated validation.
+* Runtime configuration.
 * More unit testing :-)
 
 
