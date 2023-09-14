@@ -1,19 +1,29 @@
-Garbage collection telemetry
+### This project is a collection of examples of how to use the LMAX Disruptor.  
 
-MongoDB write/read
+This Java Spring Boot project processes input data and generates output data based on configured processors.
 
-AMPS read/write
+**Technologies Involved:**
++ Garbage collection telemetry
++ Inbound and outbound disruptors
++ Reactive streams
++ Jackson JSON library.
++ Pipeline processing.
++ Mongo DB write/read
++ AMPS read/write
++ Chronicle queue read/write
++ WebSocket read/write
++ Active MQ read/write
++ File read/write
++ KDB read/write
++ HTTP read
 
-Chronicle queue
+**To-Dos:** 
+* Protobuf
+* Kafka
+* Automated validation
+* Runtime configuration
 
-WebSocket read/write
 
-Active MQ read/write
 
-File read and write
-
-Inbound and outbound disruptors
-
-Reactive streams.
 
 
