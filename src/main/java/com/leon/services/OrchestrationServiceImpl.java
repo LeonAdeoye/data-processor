@@ -3,6 +3,7 @@ package com.leon.services;
 import com.leon.disruptors.DisruptorService;
 import com.leon.handlers.*;
 import com.leon.readers.InputReader;
+import com.leon.readers.KdbReaderImpl;
 import com.leon.writers.OutputWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +28,7 @@ public class OrchestrationServiceImpl implements OrchestrationService
 	private OutputWriter outputWriter;
 	@Autowired
 	private DataProcessingEventHandler dataProcessingEventHandler;
+	//private FxRatesProcessingEventHandler fxRatesProcessingEventHandler;
 	@Autowired
 	OutputEventHandler outputEventHandler;
 	@Autowired
