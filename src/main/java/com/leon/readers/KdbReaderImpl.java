@@ -14,8 +14,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-
-
 @Service
 public class KdbReaderImpl implements InputReader
 {
@@ -37,6 +35,22 @@ public class KdbReaderImpl implements InputReader
 	private String query;
 
 	private Connection connection = null;
+
+	private static final Class<?>[] expectedTypes =
+	{
+			String[].class,
+			java.sql.Date[].class,
+			double[].class,
+			java.sql.Timestamp[].class,
+			java.sql.Time[].class,
+			long[].class,
+			int[].class,
+			boolean[].class,
+			float[].class,
+			short[].class,
+			byte[].class,
+			char[].class
+	};
 
 	private <T> T castAndGetValue(Class<T> expectedType, Object columnValue, int row)
 	{
@@ -108,26 +122,10 @@ public class KdbReaderImpl implements InputReader
 				logger.info(String.format("Executing query: %s", query));
 				Connection.Result result = (Connection.Result) connection.invoke(query);
 
-				Class<?>[] expectedTypes =
-						{
-								String[].class,
-								java.sql.Date[].class,
-								double[].class,
-								java.sql.Timestamp[].class,
-								java.sql.Time[].class,
-								long[].class,
-								int[].class,
-								boolean[].class,
-								float[].class,
-								short[].class,
-								byte[].class,
-								char[].class
-						};
-
 				final Map<String, Object> columnValuesMap = new HashMap<>();
 				final Map<Integer, ObjectNode> jsonMap = new HashMap<>();
 				final long rowCount = ((Object[]) result.columnValuesArrayOfArray[0]).length;
-				ObjectMapper objectMapper = new ObjectMapper();
+				final ObjectMapper objectMapper = new ObjectMapper();
 				objectMapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd"));
 
 				for(int ColumnIndex = 0; ColumnIndex < result.columnNames.length; ++ColumnIndex)
@@ -147,7 +145,7 @@ public class KdbReaderImpl implements InputReader
 							Class<?> expectedType = expectedTypes[typeCount];
 							if (expectedType.isInstance(columnValue))
 							{
-								ObjectNode jsonObject = jsonMap.get(row);
+								final ObjectNode jsonObject = jsonMap.get(row);
 								jsonObject.set(columnName, objectMapper.valueToTree(castAndGetValue(expectedType, columnValue, row)));
 								jsonMap.put(row, jsonObject);
 								break;
@@ -157,7 +155,6 @@ public class KdbReaderImpl implements InputReader
 				}
 
 				jsonMap.values().forEach(jsonObject -> emitter.next(new DisruptorPayload(jsonObject.toString())));
-
 				emitter.complete();
 			}
 			catch(Exception exception)
