@@ -1,7 +1,5 @@
 package com.leon.readers;
 
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.databind.util.StdDateFormat;
 import com.leon.disruptors.DisruptorPayload;
 import kx.Connection;
 import org.slf4j.Logger;
@@ -74,7 +72,7 @@ public class KdbReaderImpl implements InputReader
 
 	private <T> T castKDBValue(Object columnValue, int row)
 	{
-		switch(Connection.t(columnValue))
+		switch(Connection.getKDBType(columnValue))
 		{
 			case 11: // String
 				return (T) ((String[]) columnValue)[row];
@@ -83,7 +81,7 @@ public class KdbReaderImpl implements InputReader
 			case 7: // Long
 				return (T) Long.valueOf(((long[]) columnValue)[row]);
 			case 14: // LocalDate
-				return (T) ((LocalDate[]) columnValue)[row];
+				return (T) ((java.sql.Date[]) columnValue)[row];
 			case 6: // Integer
 				return (T) Integer.valueOf(((int[]) columnValue)[row]);
 			case 1: // Boolean
@@ -101,7 +99,7 @@ public class KdbReaderImpl implements InputReader
 			case 12: // Instant
 				return (T) ((Instant[]) columnValue)[row];
 			case 15: // LocalDateTime
-				return (T) ((LocalDateTime[]) columnValue)[row];
+				return (T) ((java.sql.Timestamp[]) columnValue)[row];
 			default:
 				throw new IllegalArgumentException("Unsupported array type");
 		}
@@ -111,7 +109,7 @@ public class KdbReaderImpl implements InputReader
 	{
 		Object castedValue = expectedType.cast(columnValue);
 
-		logger.info("Casted type: " + castedValue.getClass().getName() + " KDB type: " + Connection.t(columnValue));
+		logger.info("Casted type: " + castedValue.getClass().getName() + " KDB type: " + Connection.getKDBType(columnValue));
 
 		if (castedValue instanceof String[])
 		{
@@ -198,7 +196,7 @@ public class KdbReaderImpl implements InputReader
 
 				final Object columnValue = columnValuesMap.get(columnName);
 
-				for (int typeCount = 0; typeCount < expectedTypes.length; ++typeCount)
+				/*for (int typeCount = 0; typeCount < expectedTypes.length; ++typeCount)
 				{
 					Class<?> expectedType = expectedTypes[typeCount];
 					if (expectedType.isInstance(columnValue))
@@ -208,7 +206,10 @@ public class KdbReaderImpl implements InputReader
 						jsonMap.put(row, jsonObject);
 						break;
 					}
-				}
+				}*/
+				final ObjectNode jsonObject = jsonMap.get(row);
+				jsonObject.set(columnName, objectMapper.valueToTree(castKDBValue(columnValue, row)));
+				jsonMap.put(row, jsonObject);
 			}
 		}
 

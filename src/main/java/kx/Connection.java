@@ -1084,7 +1084,7 @@ public class Connection
    * @param x Object to get the numeric type of
    * @return kdb+ type number for an object
    */
-  public static int t(final Object x){
+  public static int getKDBType(final Object x){
     if (x instanceof Boolean)
       return -1;
     if (x instanceof UUID)
@@ -1204,7 +1204,7 @@ public class Connection
    * @throws UnsupportedEncodingException  If the named charset is not supported
    */
   public int nx(Object x) throws UnsupportedEncodingException{
-    int type=t(x);
+    int type= getKDBType(x);
     if(type==99)
       return 1+nx(((Dictionary)x).keys)+nx(((Dictionary)x).values);
     if(type==98)
@@ -1228,7 +1228,7 @@ public class Connection
   void w(Object x) throws UnsupportedEncodingException{
     int i=0;
     int n;
-    int type=t(x);
+    int type= getKDBType(x);
     w((byte)type);
     if(type<0)
       switch(type){
@@ -1688,7 +1688,7 @@ public class Connection
    * @return true if {@code x} is kdb+ null, false otherwise
    */
   public static boolean qn(Object x){
-    int t=-t(x);
+    int t=-getKDBType(x);
     return (t==2||t>4)&&x.equals(NULL[t]);
   }
   /**
@@ -1711,7 +1711,7 @@ public class Connection
    * an empty string if x was an array of Strings)
    */
   public static void set(Object x,int i,Object y){
-    Array.set(x,i,null==y?NULL[t(x)]:y);
+    Array.set(x,i,null==y?NULL[getKDBType(x)]:y);
   } 
   /**
    * Finds index of string in an array
@@ -1792,7 +1792,7 @@ public class Connection
    * @deprecated Current time in milliseconds. Users should use System.currentTimeMillis() instead
    * @return the difference, measured in milliseconds, between the current time and midnight, January 1, 1970 UTC(coordinated universal time).
    */
-  @Deprecated public static long t(){
+  @Deprecated public static long getKDBType(){
     return System.currentTimeMillis();
   }
   static long tmCallTime;
@@ -1801,7 +1801,7 @@ public class Connection
    */
   @Deprecated public static void tm(){
     long prevCallTime=tmCallTime;
-    tmCallTime=t();
+    tmCallTime= getKDBType();
     if(prevCallTime>0)
       O(tmCallTime-prevCallTime);
   }
