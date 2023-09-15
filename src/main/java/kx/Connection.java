@@ -1445,7 +1445,7 @@ public class Connection
    * @param expr The expression to send
    * @throws IOException if an I/O error occurs.
    */
-  public void ks(String expr) throws IOException{
+  public void invokeAsync(String expr) throws IOException{
     w(0,expr.toCharArray());
   }
   /**
@@ -1454,7 +1454,7 @@ public class Connection
    * @param obj The object to send
    * @throws IOException if an I/O error occurs.
    */
-  public void ks(Object obj) throws IOException{
+  public void invokeAsync(Object obj) throws IOException{
     w(0,obj);
   }
   /**
@@ -1466,7 +1466,7 @@ public class Connection
    * @param x The argument to the function named in s
    * @throws IOException if an I/O error occurs.
    */
-  public void ks(String s,Object x) throws IOException{
+  public void invokeAsync(String s,Object x) throws IOException{
     Object[] a={s.toCharArray(),x};
     w(0,a);
   }
@@ -1480,7 +1480,7 @@ public class Connection
    * @param y The second argument to the function named in s
    * @throws IOException if an I/O error occurs.
    */
-  public void ks(String s,Object x,Object y) throws IOException{
+  public void invokeAsync(String s,Object x,Object y) throws IOException{
     Object[] a={s.toCharArray(),x,y};
     w(0,a);
   }
@@ -1495,7 +1495,7 @@ public class Connection
    * @param z The third argument to the function named in s
    * @throws IOException if an I/O error occurs.
    */
-  public void ks(String s,Object x,Object y,Object z) throws IOException{
+  public void invokeAsync(String s,Object x,Object y,Object z) throws IOException{
     Object[] a={s.toCharArray(),x,y,z};
     w(0,a);
   }
