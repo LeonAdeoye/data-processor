@@ -54,23 +54,7 @@ public class KdbReaderImpl implements InputReader
 
 	private Connection connection = null;
 
-	private static final Class<?>[] expectedTypes =
-	{
-			String[].class,
-			java.sql.Timestamp[].class,
-			java.sql.Date[].class,
-			double[].class,
-			java.sql.Time[].class,
-			long[].class,
-			int[].class,
-			boolean[].class,
-			float[].class,
-			short[].class,
-			byte[].class,
-			char[].class
-	};
-
-	private <T> T castKDBValue(Object columnValue, int row)
+	private <T> T castAndGetValue(Object columnValue, int row)
 	{
 		switch(Connection.getKDBType(columnValue))
 		{
@@ -80,7 +64,7 @@ public class KdbReaderImpl implements InputReader
 				return (T) Double.valueOf(((double[]) columnValue)[row]);
 			case 7: // Long
 				return (T) Long.valueOf(((long[]) columnValue)[row]);
-			case 14: // LocalDate
+			case 14: // Date
 				return (T) ((java.sql.Date[]) columnValue)[row];
 			case 6: // Integer
 				return (T) Integer.valueOf(((int[]) columnValue)[row]);
@@ -98,74 +82,12 @@ public class KdbReaderImpl implements InputReader
 				return (T) Character.valueOf(((char[]) columnValue)[row]);
 			case 12: // Instant
 				return (T) ((Instant[]) columnValue)[row];
-			case 15: // LocalDateTime
-				return (T) ((java.sql.Timestamp[]) columnValue)[row];
+			case 15: // DateTime
+				return (T) ((java.util.Date[]) columnValue)[row];
+			case 19: // Time
+				return (T) ((java.sql.Time[]) columnValue)[row];
 			default:
-				throw new IllegalArgumentException("Unsupported array type");
-		}
-	}
-
-	private <T> T castAndGetValue(Class<T> expectedType, Object columnValue, int row)
-	{
-		Object castedValue = expectedType.cast(columnValue);
-
-		logger.info("Casted type: " + castedValue.getClass().getName() + " KDB type: " + Connection.getKDBType(columnValue));
-
-		if (castedValue instanceof String[])
-		{
-			return (T) ((String[]) castedValue)[row];
-		}
-		else if (castedValue instanceof java.sql.Timestamp[])
-		{
-			return (T) ((java.sql.Timestamp[]) castedValue)[row];
-		}
-		else if (castedValue instanceof java.sql.Date[])
-		{
-			return (T) ((java.sql.Date[]) castedValue)[row];
-		}
-		else if (castedValue instanceof java.sql.Time[])
-		{
-			return (T) ((java.sql.Time[]) castedValue)[row];
-		}
-		else if (castedValue instanceof int[])
-		{
-			return (T) Integer.valueOf(((int[]) castedValue)[row]);
-		}
-		else if (castedValue instanceof long[])
-		{
-			return (T) Long.valueOf(((long[]) castedValue)[row]);
-		}
-		else if (castedValue instanceof boolean[])
-		{
-			return (T) Boolean.valueOf(((boolean[]) castedValue)[row]);
-		}
-		else if (castedValue instanceof float[])
-		{
-			return (T) Float.valueOf(((float[]) castedValue)[row]);
-		}
-		else if (castedValue instanceof double[])
-		{
-			return (T) Double.valueOf(((double[]) castedValue)[row]);
-		}
-		else if (castedValue instanceof short[])
-		{
-			return (T) Short.valueOf(((short[]) castedValue)[row]);
-		}
-		else if (castedValue instanceof byte[])
-		{
-			return (T) Byte.valueOf(((byte[]) castedValue)[row]);
-		}
-		else if (castedValue instanceof char[])
-		{
-			return (T) Character.valueOf(((char[]) castedValue)[row]);
-		}
-		else if(castedValue instanceof UUID[])
-		{
-			return (T) ((UUID[]) castedValue)[row];
-		}
-		else
-		{
-			throw new IllegalArgumentException("Unsupported array type");
+				throw new IllegalArgumentException("Unsupported array type: " + Connection.getKDBType(columnValue));
 		}
 	}
 
@@ -195,20 +117,8 @@ public class KdbReaderImpl implements InputReader
 					jsonMap.put(row, JsonNodeFactory.instance.objectNode());
 
 				final Object columnValue = columnValuesMap.get(columnName);
-
-				/*for (int typeCount = 0; typeCount < expectedTypes.length; ++typeCount)
-				{
-					Class<?> expectedType = expectedTypes[typeCount];
-					if (expectedType.isInstance(columnValue))
-					{
-						final ObjectNode jsonObject = jsonMap.get(row);
-						jsonObject.set(columnName, objectMapper.valueToTree(castAndGetValue(expectedType, columnValue, row)));
-						jsonMap.put(row, jsonObject);
-						break;
-					}
-				}*/
 				final ObjectNode jsonObject = jsonMap.get(row);
-				jsonObject.set(columnName, objectMapper.valueToTree(castKDBValue(columnValue, row)));
+				jsonObject.set(columnName, objectMapper.valueToTree(castAndGetValue(columnValue, row)));
 				jsonMap.put(row, jsonObject);
 			}
 		}
@@ -254,18 +164,9 @@ public class KdbReaderImpl implements InputReader
 					jsonMap.put(row, JsonNodeFactory.instance.objectNode());
 
 				final Object columnValue = columnValuesMap.get(columnName);
-
-				for (int typeCount = 0; typeCount < expectedTypes.length; ++typeCount)
-				{
-					Class<?> expectedType = expectedTypes[typeCount];
-					if (expectedType.isInstance(columnValue))
-					{
-						final ObjectNode jsonObject = jsonMap.get(row);
-						jsonObject.set(columnName, objectMapper.valueToTree(castAndGetValue(expectedType, columnValue, row)));
-						jsonMap.put(row, jsonObject);
-						break;
-					}
-				}
+				final ObjectNode jsonObject = jsonMap.get(row);
+				jsonObject.set(columnName, objectMapper.valueToTree(castAndGetValue(columnValue, row)));
+				jsonMap.put(row, jsonObject);
 			}
 		}
 
