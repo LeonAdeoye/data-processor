@@ -23,12 +23,12 @@ import static com.fasterxml.jackson.databind.util.StdDateFormat.DATE_FORMAT_STR_
 @Service
 public class KdbReaderImpl implements InputReader
 {
-	class DataProcessorMsgHandler implements Connection.MsgHandler
+	class KdbProcessorMsgHandler implements Connection.MsgHandler
 	{
 		@Override
 		public void processMsg(Connection conn, byte msgType, Object msg) throws IOException
 		{
-			// Your implementation here
+			logger.info("process message.");
 		}
 	}
 
@@ -91,14 +91,8 @@ public class KdbReaderImpl implements InputReader
 		}
 	}
 
-	private void invoke(FluxSink<DisruptorPayload> emitter) throws Exception
+	void parseKdbResponse(Connection.Result result, FluxSink<DisruptorPayload> emitter)
 	{
-		logger.info(String.format("Connecting to host: %s on port: %d.", host, port));
-		connection = new Connection(host, port, username + ":" + password, false);
-
-		logger.info(String.format("Synchronously executing query: %s", query));
-		Connection.Result result = (Connection.Result) connection.invoke(query);
-
 		final Map<String, Object> columnValuesMap = new HashMap<>();
 		final Map<Integer, ObjectNode> jsonMap = new HashMap<>();
 		final long rowCount = ((Object[]) result.columnValuesArrayOfArray[0]).length;
@@ -127,51 +121,25 @@ public class KdbReaderImpl implements InputReader
 		emitter.complete();
 	}
 
+	private void invoke(FluxSink<DisruptorPayload> emitter) throws Exception
+	{
+		logger.info(String.format("Connecting to host: %s on port: %d.", host, port));
+		connection = new Connection(host, port, username + ":" + password, false);
+		logger.info(String.format("Synchronously executing query: %s", query));
+		Connection.Result result = (Connection.Result) connection.invoke(query);
+		parseKdbResponse(result, emitter);
+	}
+
 	private void invokeAsync(FluxSink<DisruptorPayload> emitter) throws Exception
 	{
 		logger.info(String.format("Connecting to host: %s on port: %d.", host, port));
 		connection = new Connection(host, port, username + ":" + password, false);
-
 		logger.info(String.format("Asynchronously executing query: %s", query));
 		connection.invokeAsync(query);
 		Connection.Result result = (Connection.Result) connection.invoke(query);
-
-		// TODO
-		connection.setMsgHandler(new Connection.MsgHandler()
-		{
-			@Override
-			public void processMsg(Connection Connection, byte msgType, Object msg) throws IOException
-			{
-				kx.Connection.MsgHandler.super.processMsg(Connection, msgType, msg);
-			}
-		});
-
-		final Map<String, Object> columnValuesMap = new HashMap<>();
-		final Map<Integer, ObjectNode> jsonMap = new HashMap<>();
-		final long rowCount = ((Object[]) result.columnValuesArrayOfArray[0]).length;
-		logger.info("Asynchronously processing {} rows", rowCount);
-		final ObjectMapper objectMapper = new ObjectMapper();
-		objectMapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd"));
-
-		for(int ColumnIndex = 0; ColumnIndex < result.columnNames.length; ++ColumnIndex)
-		{
-			final String columnName = result.columnNames[ColumnIndex];
-			columnValuesMap.put(columnName, result.columnValuesArrayOfArray[ColumnIndex]);
-
-			for (int row = 0; row < rowCount; ++row)
-			{
-				if(!jsonMap.containsKey(row))
-					jsonMap.put(row, JsonNodeFactory.instance.objectNode());
-
-				final Object columnValue = columnValuesMap.get(columnName);
-				final ObjectNode jsonObject = jsonMap.get(row);
-				jsonObject.set(columnName, objectMapper.valueToTree(castAndGetValue(columnValue, row)));
-				jsonMap.put(row, jsonObject);
-			}
-		}
-
-		jsonMap.values().forEach(jsonObject -> emitter.next(new DisruptorPayload(jsonObject.toString())));
-		emitter.complete();
+		// TODO: figure out how to process async response
+		connection.setMsgHandler(new KdbProcessorMsgHandler());
+		parseKdbResponse(result, emitter);
 	}
 
 	@Override
