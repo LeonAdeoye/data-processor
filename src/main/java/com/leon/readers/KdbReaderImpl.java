@@ -5,13 +5,12 @@ import kx.Connection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
@@ -21,6 +20,7 @@ import reactor.core.publisher.FluxSink;
 import static com.fasterxml.jackson.databind.util.StdDateFormat.DATE_FORMAT_STR_ISO8601;
 
 @Service
+@ConditionalOnProperty(value="kdb.input.reader", havingValue = "true")
 public class KdbReaderImpl implements InputReader
 {
 	class KdbProcessorMsgHandler implements Connection.MsgHandler
@@ -118,7 +118,6 @@ public class KdbReaderImpl implements InputReader
 		}
 
 		jsonMap.values().forEach(jsonObject -> emitter.next(new DisruptorPayload(jsonObject.toString())));
-		emitter.complete();
 	}
 
 	private void invoke(FluxSink<DisruptorPayload> emitter) throws Exception
@@ -128,6 +127,7 @@ public class KdbReaderImpl implements InputReader
 		logger.info(String.format("Synchronously executing query: %s", query));
 		Connection.Result result = (Connection.Result) connection.invoke(query);
 		parseKdbResponse(result, emitter);
+		emitter.complete();
 	}
 
 	private void invokeAsync(FluxSink<DisruptorPayload> emitter) throws Exception
@@ -140,6 +140,8 @@ public class KdbReaderImpl implements InputReader
 		// TODO: figure out how to process async response
 		connection.setMsgHandler(new KdbProcessorMsgHandler());
 		parseKdbResponse(result, emitter);
+		emitter.complete();
+
 	}
 
 	@Override
